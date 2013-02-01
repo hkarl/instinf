@@ -1,0 +1,44 @@
+{% extends "admin/base_site.html" %}
+
+{% load render_table from django_tables2 %}
+
+{% block content %}
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+Wählen Sie aus:
+<form action = "{% url offeneZusagen %}" method="get" >
+<select name = "fachgebiet">
+  {% ifequal "-------"  filterfields.fachgebiet %}
+  <option selected value="-------">-------</option>
+  {% else %}
+  <option value="-------">-------</option>
+  {% endifequal %}
+    
+  {% for fg in fachgebiete %}
+    {% ifequal fg.kuerzel filterfields.fachgebiet %}
+      <option selected value="{{fg.kuerzel}}"> {{fg.kuerzel}} </option>
+    {% else %}
+      <option value="{{fg.kuerzel}}"> {{fg.kuerzel}} </option>
+    {% endifequal %}
+  {% endfor %}  
+</select>
+<p>
+{% csrf_token %}
+<input type="submit" value="Abfrage" />
+</form>
+
+
+<hr>
+<p>
+ Filter: {{filterfields.fachgebiet}}
+<p>
+<hr>
+<p>
+
+{% render_table zusagen %}
+
+<hr>
+
+
+{% endblock content %}

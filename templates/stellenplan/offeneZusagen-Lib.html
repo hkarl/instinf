@@ -1,0 +1,84 @@
+{% extends "admin/base_site.html" %}
+
+{% load render_table from django_tables2 %}
+
+
+{% load staticfiles %}
+
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="{% static 'django_tables2/themes/paleblue/css/screen.css' %}" />
+
+<link type="text/css" href="{% static 'jquery/css/ui-lightness/jquery-ui-1.10.0.custom.css'%}" rel="Stylesheet" />
+<script type="text/javascript" src="{% static 'jquery/js/jquery-1.9.0.js'%}"></script>
+<script type="text/javascript" src="{% static 'jquery/js/jquery-ui-1.10.0.custom.min.js'%}"></script>
+<script type="text/javascript" src="{% static 'jquery/development-bundle/ui/i18n/jquery.ui.datepicker-de.js'%}"></script>
+
+<script>
+$(function() {
+  $( "#id_Von" ).datepicker({
+showButtonPanel: true,
+changeMonth: true,
+changeYear: true,
+yearRange: "-5:+20", 
+showOn: "button",
+buttonImage: "{% static 'jquery/development-bundle/demos/images/calendar.gif' %}",
+buttonImageOnly: true});
+});
+</script>
+
+<script>
+$(function() {
+  $( "#id_Bis" ).datepicker({
+showButtonPanel: true,
+changeMonth: true,
+yearRange: "-5:+20", 
+changeYear: true,
+showOn: "button",
+buttonImage: "{% static 'jquery/development-bundle/demos/images/calendar.gif' %}",
+buttonImageOnly: true});
+});
+</script>
+
+<script>
+$(function() {
+$( "#tabs" ).tabs();
+});
+</script>
+
+{% endblock %}
+
+{% block content %}
+
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+Schränken Sie die anzuzeigenden Zusagen ein:
+
+<form action = "{% url offeneZusagen %}" method="POST" >
+{% csrf_token %}
+{{ form.as_p }}
+<input type="submit" value="Abfrage" />
+</form>
+
+<br>
+
+<hr>
+
+    {% render_table zusagen %}
+
+<br>
+
+<div id="tabs">
+  <ul>
+    <li> <a href="#tabs-2">Alle Zusagen, nach Wertigkeit</a></li>
+    <li> <a href="#tabs-1">Details Zusagen</a></li>
+  </ul>
+  <div id="tabs-2">  
+    {% render_table wertigzusammenfassung%}
+  </div>  
+  <div id="tabs-1">  
+    {% render_table zusagen %}
+  </div>  
+</div>
+
+{% endblock content %}

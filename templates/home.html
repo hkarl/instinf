@@ -1,0 +1,23 @@
+
+{% extends "admin/base_site.html" %} 
+{% load i18n %}
+
+{% block title %}{{ title }} | {% trans 'Informatik - Home' %}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">{% trans 'Institut für Informatik UPB' %}</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<ul>
+  <li> <a href="http:admin/"> Daten eingeben, ändern, löschen </a>
+  <li> Abfragen auf den Stellenplan  
+  <ul>
+    <li> <a href = "http:stellenplan/offeneZusagen"> Offene Zusagen </a>
+    <li> <a href = "http:stellenplan/qStellen"> Abfragen zu Stellen </a>
+  </ul>
+</ul>
+{% endblock content %}
+
