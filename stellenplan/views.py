@@ -62,22 +62,37 @@ def qStellen (request):
 
     # apply any filters:
     qs = Stelle.objects.all()
-    
     qs2 = standardfilters (qs, ['Wertigkeit', 'Art'], ff.cleaned_data)
-    # aggregiere die so gefilterten Daten nach Wertigkeit und nach Stelle,
-    # baue daraus eine Timeline auf
 
+    
     # die Tabellen für die Ausgabe via django_tables2 zusammenbauen 
     stellentab = tables.StellenTable (qs2) 
     RequestConfig (request).configure(stellentab)
 
+    # fasse die gefilterten DAten zu Gruppen zusammen
+    tgArt = TimelineGroups (qs2, 'art')
+    tgWertigkeit = TimelineGroups (qs2, 'wertigkeit')
+    
+    # ziehe von den Stellen die Zusagen ab. Dazu erstmal die Zusagen entsprechend filtern,
+    # dann ueber timelinegroups verarbeiten. Da nur StellenTYPEN, aber nicht spezifischer STellen
+    # zugesagt werdne, macht es keinen Sinn, das individuell pro Stellen zu machen, sondern nur für
+    # entsprechende Aggregierungen
+
+    zusageQs = standardfilters (Zusage.objects.all(),  ['Wertigkeit'], ff.cleaned_data)
+    tgZusageWertigkeit = TimelineGroups (zusageQs, 'wertigkeit')
+    
+    tgWertigkeitOhneZusagen = tgWertigkeit.subtract(tgZusageWertigkeit)
+
+    print "dumping Stellen ohne Zusagen"
+    # tgWertigkeitOhneZusagen.dump()
 
     return render (request,
                    "stellenplan/qStellen.html",
                    {'form': ff,
                     'stellen': stellentab,
-                    'gruppe': TimelineGroups (qs2, 'art').asTable(request),
-                    'wertigkeit': TimelineGroups (qs2, 'wertigkeit').asTable(request),
+                    'gruppe': tgArt.asTable(request),
+                    'wertigkeit': tgWertigkeit.asTable(request),
+                    'stellenOhneZusagen': tgWertigkeitOhneZusagen.asTable(request), 
                        })
 
 

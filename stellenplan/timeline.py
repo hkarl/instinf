@@ -61,13 +61,19 @@ class Timeline:
         for r in relevantdates:
             self.m[r] += p 
 
+    def addTL (self, tl, vorzeichen):
+        """Von self einen andere timeline abziehen."""
 
+        datelist = sorted(tl.m.keys())
+        for i in range(0,len(datelist)-1):
+            self.add(datelist[i], datelist[i+1], vorzeichen*tl.m[datelist[i]])
     
 class TimelineGroups ():
     """ Grouping a queryset along a given column, producing one timeline for each
-    value in that column"""
+    value in that column.
+    Internal structure: a map, keys are the column values, values are timeline instances. """
 
-    def __init__ (self, qs, column=None):
+    def __init__ (self, qs=None, column=None):
         self.tlg = {}
         if column:
             filterString = column + '__' + 'exact'
@@ -80,7 +86,8 @@ class TimelineGroups ():
                 qsColumned = qs.filter(**{filterString: c[column]})
                 self.tlg[c[column]] = self.TLfromQueryset (qsColumned)
         else:
-            self.tlg[""] = self.TLfromQueryset(qs)
+            if qs:
+                self.tlg[""] = self.TLfromQueryset(qs)
 
     def TLfromQueryset (self, qs):
         tl = Timeline()
@@ -101,11 +108,26 @@ class TimelineGroups ():
         for k,v in self.tlg.iteritems():
             r.extend(v.aslist({'Gruppe': k}))
 
-        print r
+        # print r
         
         tbl = tables.GruppenTable(r)
         django_tables2.RequestConfig(request).configure(tbl)
 
         return tbl
-    
+
+    def subtract (self, minuend):
+        """Create a NEW tg, subtract the minuend, and return the newly created tg"""
+
+        tg = TimelineGroups()
+        tg.tlg = self.tlg
+
+        # stelle sicher, dass alle im Minuenden vorkommenden keys auch im REsultat vorkommen
+        for k in minuend.tlg.keys():
+            if not k in tg.tlg:
+                tg.tlg[k] = Timeline()
+
+            # und dann abziehen:
+            tg.tlg[k].addTL (minuend.tlg[k], -1)
+ 
+        return tg 
         
