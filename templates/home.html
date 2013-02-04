@@ -1,5 +1,6 @@
 
 {% extends "admin/base_site.html" %} 
+{% load staticfiles %}
 {% load i18n %}
 
 {% block title %}{{ title }} | {% trans 'Informatik - Home' %}{% endblock %}
@@ -19,5 +20,11 @@
     <li> <a href = "http:stellenplan/qStellen"> Abfragen zu Stellen </a>
   </ul>
 </ul>
+
+<a href="{% static 'gantt.html'%}" > Test fuer gantt  </a>
+
+
+
+
 {% endblock content %}
 
