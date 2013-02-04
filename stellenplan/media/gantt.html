@@ -6,7 +6,6 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1" >
         <link rel="stylesheet" href="jgantt/css/style.css" />
         <link rel="stylesheet" href="jgantt/css/bootstrap.css" />
-        <link rel="stylesheet" href="jgantt/css/prettify.css" />
 		<style type="text/css">
 			.contain {
 				width: 800px;
@@ -37,9 +36,6 @@
 	<script src="jquery/js/jquery-1.9.0.js"></script>
 			
 	<script src="jgantt/js/jquery.fn.gantt.js"></script>
-	<script src="jgantt/js/bootstrap-tooltip.js"></script>
-	<script src="jgantt/js/bootstrap-popover.js"></script>
-	<script src="jgantt/js/prettify.js"></script>
     <script>
 
 		$(function() {
@@ -134,12 +130,6 @@
 				maxScale: "months",
 				minScale: "days",
 				itemsPerPage: 10,
-				onItemClick: function(data) {
-					alert("Item clicked - show some details");
-				},
-				onAddClick: function(dt, rowId) {
-					alert("Empty space clicked - add an item!");
-				},
 				onRender: function() {
 					if (window.console && typeof console.log === "function") {
 						console.log("chart rendered");
@@ -147,14 +137,6 @@
 				}
 			});
 
-			$(".gantt").popover({
-				selector: ".bar",
-				title: "I'm a popover",
-				content: "And I'm the content of said popover.",
-				trigger: "hover"
-			});
-
-			prettyPrint();
 
 		});
 
