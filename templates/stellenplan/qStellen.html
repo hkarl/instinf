@@ -55,7 +55,9 @@ $( "#tabs" ).tabs();
 
 <script>
   $(function() {
-    $( "#accordion" ).accordion();
+    $( "#accordion" ).accordion({ collapsible: true,
+                                 heightStyle: "content",
+                                  animate: 20});
   });
 </script>
 

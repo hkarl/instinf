@@ -86,11 +86,9 @@ def qStellen (request):
     print "dumping Stellen ohne Zusagen"
     # tgWertigkeitOhneZusagen.dump()
 
-    gantt = (tgWertigkeitOhneZusagen.asjGantt()
-                              if (ff.cleaned_data['Von'] and ff.cleaned_data['Bis'])
-                              else "") 
-    print gantt 
-
+    gantt = (tgWertigkeitOhneZusagen.asjGantt() ) 
+                              ## if (ff.cleaned_data['Von'] and ff.cleaned_data['Bis'])
+                              ## else "") 
 
     return render (request,
                    "stellenplan/qStellen.html",
