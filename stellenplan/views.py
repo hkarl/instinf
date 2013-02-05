@@ -93,6 +93,7 @@ def qStellen (request):
     return render (request,
                    "stellenplan/qStellen.html",
                    {'form': ff,
+                    'urlTarget': 'qStellen',
                     'stellen': stellentab,
                     'gruppe': tgArt.asTable(request),
                     'wertigkeit': tgWertigkeit.asTable(request),

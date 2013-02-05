@@ -1,0 +1,84 @@
+{% extends "admin/base_site.html" %}
+{% load staticfiles %}
+{% load url from future %}
+
+
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="{% static 'django_tables2/themes/paleblue/css/screen.css' %}" />
+
+
+
+<link type="text/css" href="{% static 'jquery/css/ui-lightness/jquery-ui-1.10.0.custom.css'%}" rel="Stylesheet" />
+
+<link rel="stylesheet" href="{% static 'jgantt/css/style.css' %}" />
+<link rel="stylesheet" href="{% static 'jgantt/css/bootstrap.css' %}" />
+
+
+<script type="text/javascript" src="{% static 'jquery/js/jquery-1.9.0.js'%}"></script>
+<script type="text/javascript" src="{% static 'jquery/js/jquery-ui-1.10.0.custom.min.js'%}"></script>
+<script type="text/javascript" src="{% static 'jquery/development-bundle/ui/i18n/jquery.ui.datepicker-de.js'%}"></script>
+
+
+<script src="{% static 'jgantt/js/jquery.fn.gantt.js' %}"></script>
+
+<script>
+$(function() {
+  $( "#id_Von" ).datepicker({
+showButtonPanel: true,
+changeMonth: true,
+changeYear: true,
+yearRange: "-5:+20", 
+showOn: "button",
+buttonImage: "{% static 'jquery/development-bundle/demos/images/calendar.gif' %}",
+buttonImageOnly: true});
+});
+</script>
+
+<script>
+$(function() {
+  $( "#id_Bis" ).datepicker({
+showButtonPanel: true,
+changeMonth: true,
+yearRange: "-5:+20", 
+changeYear: true,
+showOn: "button",
+buttonImage: "{% static 'jquery/development-bundle/demos/images/calendar.gif' %}",
+buttonImageOnly: true});
+});
+</script>
+
+<script>
+$(function() {
+$( "#tabs" ).tabs();
+});
+</script>
+
+
+<script>
+  $(function() {
+    $( "#accordion" ).accordion({ collapsible: true,
+                                 heightStyle: "content",
+                                  animate: 20});
+  });
+</script>
+
+{{ gantt|safe }}
+
+
+{% endblock %}
+
+
+{% block content %}
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+
+<form action = "{% url urlTarget %}" method="GET" >
+{% csrf_token %}
+{{ form.as_p }}
+<input type="submit" value="Abfrage" />
+</form>
+
+
+{% endblock %}
+
