@@ -214,14 +214,6 @@
 }
 
 
-.fn-gantt .ganttHK {
-    background-color: #FFFFE1;
-}
-.fn-gantt .ganttHK .fn-label {
-    color: #000000 !important;
-}
-
-
 
 .fn-gantt .ganttGreen {
     background-color: #D8EDA3;
@@ -237,6 +229,173 @@
     color: #714715 !important;
 }
 
+
+.fn-gantt .gantt-II-10 {
+    background-color: #ff0000;
+}
+.fn-gantt-II-10 .fn-label {
+    color: #000000 !important;
+}
+    
+
+.fn-gantt .gantt-II-9 {
+    background-color: #ff3019;
+}
+.fn-gantt-II-9 .fn-label {
+    color: #000000 !important;
+}
+    
+
+.fn-gantt .gantt-II-8 {
+    background-color: #ff5b32;
+}
+.fn-gantt-II-8 .fn-label {
+    color: #000000 !important;
+}
+    
+
+.fn-gantt .gantt-II-7 {
+    background-color: #ff824c;
+}
+.fn-gantt-II-7 .fn-label {
+    color: #000000 !important;
+}
+    
+
+.fn-gantt .gantt-II-6 {
+    background-color: #ffa366;
+}
+.fn-gantt-II-6 .fn-label {
+    color: #000000 !important;
+}
+    
+
+.fn-gantt .gantt-II-5 {
+    background-color: #ffbf7f;
+}
+.fn-gantt-II-5 .fn-label {
+    color: #000000 !important;
+}
+    
+
+.fn-gantt .gantt-II-4 {
+    background-color: #ffd699;
+}
+.fn-gantt-II-4 .fn-label {
+    color: #000000 !important;
+}
+    
+
+.fn-gantt .gantt-II-3 {
+    background-color: #ffe8b2;
+}
+.fn-gantt-II-3 .fn-label {
+    color: #000000 !important;
+}
+    
+
+.fn-gantt .gantt-II-2 {
+    background-color: #fff4cc;
+}
+.fn-gantt-II-2 .fn-label {
+    color: #000000 !important;
+}
+    
+
+.fn-gantt .gantt-II-1 {
+    background-color: #fffce5;
+}
+.fn-gantt-II-1 .fn-label {
+    color: #000000 !important;
+}
+    
+
+.fn-gantt .gantt-II0 {
+    background-color: #ffffff;
+}
+.fn-gantt-II0 .fn-label {
+    color: #000000 !important;
+}
+    
+
+.fn-gantt .gantt-II1 {
+    background-color: #fcffe5;
+}
+.fn-gantt-II1 .fn-label {
+    color: #000000 !important;
+}
+    
+
+.fn-gantt .gantt-II2 {
+    background-color: #f4ffcc;
+}
+.fn-gantt-II2 .fn-label {
+    color: #000000 !important;
+}
+    
+
+.fn-gantt .gantt-II3 {
+    background-color: #e8ffb2;
+}
+.fn-gantt-II3 .fn-label {
+    color: #000000 !important;
+}
+    
+
+.fn-gantt .gantt-II4 {
+    background-color: #d6ff99;
+}
+.fn-gantt-II4 .fn-label {
+    color: #000000 !important;
+}
+    
+
+.fn-gantt .gantt-II5 {
+    background-color: #bfff7f;
+}
+.fn-gantt-II5 .fn-label {
+    color: #000000 !important;
+}
+    
+
+.fn-gantt .gantt-II6 {
+    background-color: #a3ff66;
+}
+.fn-gantt-II6 .fn-label {
+    color: #000000 !important;
+}
+    
+
+.fn-gantt .gantt-II7 {
+    background-color: #82ff4c;
+}
+.fn-gantt-II7 .fn-label {
+    color: #000000 !important;
+}
+    
+
+.fn-gantt .gantt-II8 {
+    background-color: #5bff32;
+}
+.fn-gantt-II8 .fn-label {
+    color: #000000 !important;
+}
+    
+
+.fn-gantt .gantt-II9 {
+    background-color: #30ff19;
+}
+.fn-gantt-II9 .fn-label {
+    color: #000000 !important;
+}
+    
+
+.fn-gantt .gantt-II10 {
+    background-color: #00ff00;
+}
+.fn-gantt-II10 .fn-label {
+    color: #000000 !important;
+}
 
 /* === BOTTOM NAVIGATION === */
 

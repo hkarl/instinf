@@ -87,10 +87,11 @@ class Timeline:
             from: "/Date(%d)/",
             to: "/Date(%d)/",
             label: "%s",
-            customClass: "ganttRed"
+            customClass: "gantt-II%d"
             ''' % (unix_time_millis(kk[i]),
                    unix_time_millis(kk[i+1]),
-                   self.m[kk[i]]))
+                   self.m[kk[i]],
+                   min(max(self.m[kk[i]]/100, -10), 10)))
 
         return "[{" + "},\n{".join(v) + "}]"
     
