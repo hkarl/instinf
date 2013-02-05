@@ -190,6 +190,7 @@
             -webkit-border-radius: 3px;
             -moz-border-radius: 3px;
             border-radius: 3px;
+	    border: 2px solid #454546;
 }
 
 .fn-gantt .bar .fn-label {
@@ -211,6 +212,16 @@
 .fn-gantt .ganttRed .fn-label {
     color: #78436D !important;
 }
+
+
+.fn-gantt .ganttHK {
+    background-color: #FFFFE1;
+}
+.fn-gantt .ganttHK .fn-label {
+    color: #000000 !important;
+}
+
+
 
 .fn-gantt .ganttGreen {
     background-color: #D8EDA3;

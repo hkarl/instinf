@@ -4,6 +4,16 @@ from datetime import timedelta
 import django_tables2
 import tables
 
+import datetime
+
+def unix_time(dt):
+    epoch = datetime.datetime.utcfromtimestamp(0).date()
+    delta = dt - epoch
+    return delta.total_seconds()
+
+def unix_time_millis(dt):
+    return unix_time(dt) * 1000.0
+
 
 class Timeline:
     """A class to store a timeline: maps points in time to integer values.
@@ -67,6 +77,22 @@ class Timeline:
         datelist = sorted(tl.m.keys())
         for i in range(0,len(datelist)-1):
             self.add(datelist[i], datelist[i+1], vorzeichen*tl.m[datelist[i]])
+
+    def asjGanttValue (self):
+        kk = sorted(self.m.keys())
+        v = []
+        for i in range(0, len(kk)-1):
+            # print kk[i], kk[i+1], self.m[kk[i]]
+            v.append( '''
+            from: "/Date(%d)/",
+            to: "/Date(%d)/",
+            label: "%s",
+            customClass: "ganttRed"
+            ''' % (unix_time_millis(kk[i]),
+                   unix_time_millis(kk[i+1]),
+                   self.m[kk[i]]))
+
+        return "[{" + "},\n{".join(v) + "}]"
     
 class TimelineGroups ():
     """ Grouping a queryset along a given column, producing one timeline for each
@@ -115,6 +141,46 @@ class TimelineGroups ():
 
         return tbl
 
+    def asjGantt (self):
+        r = """
+        <script>
+        $(function() {
+          "use strict";
+          $(".gantt").gantt({
+            source: [{
+        """
+
+        rr = []
+        # iterate over the individual timelines, gives one chart entry each
+        for k, v in self.tlg.iteritems():
+            # print k,  v.asjGanttValue()
+            rr.append('''
+            name: "%s",
+            values: %s
+            ''' % (k, v.asjGanttValue()))
+
+        r += "},{".join (rr)
+        
+        r += """
+        }],
+        navigate: "scroll",
+        scale: "months",
+        maxScale: "years",
+        minScale: "months",
+        itemsPerPage: 10,
+        onRender: function() {
+        if (window.console && typeof console.log === "function") {
+        console.log("chart rendered");
+        }
+        }        
+        });
+        });
+        </script>
+        """
+
+        print r
+        return r 
+
     def subtract (self, minuend):
         """Create a NEW tg, subtract the minuend, and return the newly created tg"""
 
@@ -131,3 +197,111 @@ class TimelineGroups ():
  
         return tg 
         
+## Example for the script:
+
+    ## <script>
+
+    ##     	$(function() {
+
+    ##     		"use strict";
+
+    ##     		$(".gantt").gantt({
+    ##     			source: [{
+    ##     				name: "Sprint 0",
+    ##     				desc: "Analysis",
+    ##     				values: [{
+    ##     					from: "/Date(1320192000000)/",
+    ##     					to: "/Date(1322401600000)/",
+    ##     					label: "Requirement Gathering", 
+    ##     					customClass: "ganttRed"
+    ##     				}]
+    ##     			},{
+    ##     				name: " ",
+    ##     				desc: "Scoping",
+    ##     				values: [{
+    ##     					from: "/Date(1322611200000)/",
+    ##     					to: "/Date(1323302400000)/",
+    ##     					label: "Scoping", 
+    ##     					customClass: "ganttRed"
+    ##     				}]
+    ##     			},{
+    ##     				name: "Sprint 1",
+    ##     				desc: "Development",
+    ##     				values: [{
+    ##     					from: "/Date(1323802400000)/",
+    ##     					to: "/Date(1325685200000)/",
+    ##     					label: "Development", 
+    ##     					customClass: "ganttGreen"
+    ##     				}]
+    ##     			},{
+    ##     				name: " ",
+    ##     				desc: "Showcasing",
+    ##     				values: [{
+    ##     					from: "/Date(1325685200000)/",
+    ##     					to: "/Date(1325695200000)/",
+    ##     					label: "Showcasing", 
+    ##     					customClass: "ganttBlue"
+    ##     				}]
+    ##     			},{
+    ##     				name: "Sprint 2",
+    ##     				desc: "Development",
+    ##     				values: [{
+    ##     					from: "/Date(1326785200000)/",
+    ##     					to: "/Date(1325785200000)/",
+    ##     					label: "Development", 
+    ##     					customClass: "ganttGreen"
+    ##     				}]
+    ##     			},{
+    ##     				name: " ",
+    ##     				desc: "Showcasing",
+    ##     				values: [{
+    ##     					from: "/Date(1328785200000)/",
+    ##     					to: "/Date(1328905200000)/",
+    ##     					label: "Showcasing", 
+    ##     					customClass: "ganttBlue"
+    ##     				}]
+    ##     			},{
+    ##     				name: "Release Stage",
+    ##     				desc: "Training",
+    ##     				values: [{
+    ##     					from: "/Date(1330011200000)/",
+    ##     					to: "/Date(1336611200000)/",
+    ##     					label: "Training", 
+    ##     					customClass: "ganttOrange"
+    ##     				}]
+    ##     			},{
+    ##     				name: " ",
+    ##     				desc: "Deployment",
+    ##     				values: [{
+    ##     					from: "/Date(1336611200000)/",
+    ##     					to: "/Date(1338711200000)/",
+    ##     					label: "Deployment", 
+    ##     					customClass: "ganttOrange"
+    ##     				}]
+    ##     			},{
+    ##     				name: " ",
+    ##     				desc: "Warranty Period",
+    ##     				values: [{
+    ##     					from: "/Date(1336611200000)/",
+    ##     					to: "/Date(1349711200000)/",
+    ##     					label: "Warranty Period", 
+    ##     					customClass: "ganttOrange"
+    ##     				}]
+    ##     			}],
+    ##     			navigate: "scroll",
+    ##     			scale: "weeks",
+    ##     			maxScale: "months",
+    ##     			minScale: "days",
+    ##     			itemsPerPage: 10,
+    ##     			onRender: function() {
+    ##     				if (window.console && typeof console.log === "function") {
+    ##     					console.log("chart rendered");
+    ##     				}
+    ##     			}
+    ##     		});
+
+
+    ##     	});
+
+    ## </script>
+    
