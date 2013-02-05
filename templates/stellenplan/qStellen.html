@@ -5,15 +5,9 @@
 
 {{ block.super }}
 
+{% if error_message %}
 
-
-
-
-<br>
-
-<hr>
-
-
+{% else %}
 
 <div id="accordion">
 <h3> Alle Stellen, ohne Berücksichtigung von Zusagen </h3>
@@ -50,7 +44,7 @@
 </div>
 </div>
 
-
+{% endif %}
 
 
 			

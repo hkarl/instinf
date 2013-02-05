@@ -42,6 +42,15 @@ def qStellen (request):
         Von = forms.fields.DateField(required=False)
         Bis = forms.fields.DateField(required=False)
 
+        def clean(self):
+            cleaned_data = super(StellenFilterForm, self).clean()
+
+            if (cleaned_data['Von'] and
+                cleaned_data['Bis'] and
+                cleaned_data['Von'] > cleaned_data['Bis']):
+                print "raising error"
+                raise forms.ValidationError ("Das Von Datum muss vor dem Bis Datum liegen.")
+            return cleaned_data 
 
     ################
     if not request.method == 'GET':
@@ -51,7 +60,15 @@ def qStellen (request):
     if request.GET:
         # es gibt schon eine Anfrage
         ff = StellenFilterForm (request.GET)
-        ff.is_valid()
+        if not ff.is_valid():
+            print "error"
+            return render (request,
+                           "stellenplan/qStellen.html",
+                           {'error_message': 'Bitte berichtigen Sie folgenden Fehler: ',
+                            'form': ff,
+                            'urlTarget': 'qStellen',                           
+})
+
     else:
         # empty request, neu aufbauen 
         ff = StellenFilterForm ()
