@@ -4,8 +4,11 @@ from datetime import timedelta
 import django_tables2
 import tables
 import copy
-
 import datetime
+import re
+
+from accordion import Accordion
+
 
 def unix_time(dt):
     epoch = datetime.datetime.utcfromtimestamp(0).date()
@@ -14,6 +17,7 @@ def unix_time(dt):
 
 def unix_time_millis(dt):
     return unix_time(dt) * 1000.0
+
 
 
 class Timeline:
@@ -180,8 +184,40 @@ class TimelineGroups ():
         </script>
         """
 
-        print r
+        # print r
         return r 
+
+    def asAccordion (self, title, d, request):
+        """
+        Turn this timeline group into an accordion entry with two tabs: table and gantt.
+        Add them to corresponding entires in the dictionary:
+        d[head] : add the necessary scripts for the HTML header
+        d[key][actitle] = title
+        d[key][tabtitle] = list of titles for a tab 
+        d[key][tabhtml] = list of html code that goes on the tab 
+        where key is the sanitzed version of title
+        """
+
+        if 'Accordion' not in d:
+            d['Accordion'] = []
+
+        ## ac =  Accordion(title)
+        ## ac.addtab ("Tabelle", self.asTable(request))
+        ## .addtab ("Gantt", self.asjGantt(key))
+
+        key = re.sub (r'[^a-zA-Z0-9]+', '', title)
+        d['Accordion'].append ({
+            'title': title,
+            'key': key, 
+            'content' : [ {'t': 'Tabelle',
+                           'c': self.asTable(request),},
+                           {'t': 'Gantt',
+                            'c': self.asjGantt(key)}],
+            })
+            
+
+        
+
 
     def subtract (self, minuend):
         """Create a NEW tg, subtract the minuend, and return the newly created tg"""

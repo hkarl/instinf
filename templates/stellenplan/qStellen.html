@@ -6,6 +6,39 @@
 {% block extrahead %}
 {{ block.super }}
 
+<script>
+$(function() {
+$( "#tabs" ).tabs();
+});
+</script>
+
+<script>
+$(function() {
+$( "#tabs1" ).tabs();
+});
+</script>
+
+
+{% if Accordion %}
+{% for h in Accordion %}
+  <!-- create a tab script for each accordion -->
+  <script>
+     $(function() {
+     $( "#tabs-{{h.key}}" ).tabs();
+     });
+   </script>
+
+   <!-- does this accordion have a Gantt entry? then its content goes here -->
+  {% for tabentry in h.content %}
+     {% ifequal tabentry.t "Gantt" %}
+         {{ tabentry.c|safe}}
+     {% endifequal %} 
+  {% endfor %}
+{% endfor %}
+{% endif %} 
+
+
+{{ gantt|safe }}
 {{ wertigkeitGantt|safe }} 
 
 {% endblock extrahead %}
@@ -18,56 +51,91 @@
 
 {% else %}
 
+
+
+
+
+{% if Accordion %}
+
+  <div id="accordion"> 
+  {% for h in Accordion %}
+    <h3> {{ h.title }} </h3>
+    <div>
+      <div id="tabs-{{h.key}}">
+	<ul>
+	  {% for refs in h.content %}
+	  <li>  <a href="#tabs-{{h.key}}-{{forloop.counter}}"> {{refs.t}}  </a> </li> 
+	  {% endfor %} 
+	</ul>
+	{% for refs in h.content %}
+  	  <div id="tabs-{{h.key}}-{{forloop.counter}}">
+	    {% ifequal refs.t "Tabelle" %}
+	      {% render_table refs.c %}
+	    {% else %}
+	      {% ifequal refs.t "Gantt" %}
+	         <div class="{{h.key}}"> </div>  
+	      {% else %}
+	         {{ refs.c }} 
+	      {% endifequal %}
+	    {% endifequal %} 
+	  </div>
+	{% endfor %} 
+      </div> <!-- end of div tabs --> 
+    </div>
+  {% endfor %}
+  </div> <!-- end accordion --> 
+{% endif %} 
+
+
+<h2> Manuelles Accordion </h2>
+
 <div id="accordion">
-<h3> Alle Stellen, ohne Berücksichtigung von Zusagen </h3>
-<div>
-
-
-<div id="tabs">
-<ul>
-  <li> <a href="#tabs-details">Stellendetails </a> </li>
-  <li> <a href="#tabs-art">Gruppiert nach Finanzierung</a> </li>
-  <li> <a href="#tabs-wertigkeit">Gruppiert nach Wertigkeit</a> </li>
-  <li> <a href="#tabs-wertigkeitGantt">Gruppiert nach Wertigkeit, Gantt</a> </li>
-</ul>
-<div id="tabs-details">
-{% render_table stellen %}
-</div>
-<div id="tabs-art">
-
-{% render_table gruppe %}
-</div>
-
-<div id="tabs-wertigkeit">
-{% render_table wertigkeit %}
-</div>
-
-<div id="tabs-wertigkeitGantt">
-<div class="wertigkeitGantt"></div>
-</div>
-
-
-</div>
-
-
-
-</div>
-
-
 
 <h3> Stellen nach Wertigkeit gruppiert, Zusagen sind abgezogen, als Tabelle</h3>
-
 <div>
-  {% render_table stellenOhneZusagen %}
+  <div id="tabs1">
+    <ul>
+      <li><a href="#tabs1-2">Proin dolor</a></li>
+      <li><a href="#tabs1-3">Aenean lacinia</a></li>
+    </ul>
+    <div id="tabs1-2">
+      {% render_table stellenOhneZusagen %}
+    </div>
+    <div id="tabs1-3">
+      <div class="gantt"></div>
+    </div>
+  </div>
 </div>
 
-<h3> Stellen nach Wertigkeit gruppiert, Zusagen sind abgezogen, als Gantt Chart</h3>
-
+<h3> Alle Stellen, ohne Berücksichtigung von Zusagen </h3>
 <div>
-<div class="gantt"></div>
+  <div id="tabs">
+    <ul>
+      <li> <a href="#tabs-details">Stellendetails </a> </li>
+      <li> <a href="#tabs-art">Gruppiert nach Finanzierung</a> </li>
+      <li> <a href="#tabs-wertigkeit">Gruppiert nach Wertigkeit</a> </li>
+      <li> <a href="#tabs-wertigkeitGantt">Gruppiert nach Wertigkeit, Gantt</a> </li>
+    </ul>
+    <div id="tabs-details">
+      {% render_table stellen %}
+    </div>
+    <div id="tabs-art">
+      {% render_table gruppe %}
+    </div>
+    <div id="tabs-wertigkeit">
+      {% render_table wertigkeit %}
+    </div>
+    <div id="tabs-wertigkeitGantt">
+      <div class="wertigkeitGantt">
+      </div>
+    </div>
+  </div>
 </div>
 
-</div>
+
+
+<!-- end of accordion --!> 
+</div>   
 
 
 

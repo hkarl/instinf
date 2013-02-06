@@ -10,7 +10,7 @@ from django.forms.widgets import CheckboxSelectMultiple
 import tables
 from django_tables2   import RequestConfig
 import django_tables2 
-
+import pprint 
 
 def standardfilters (qs, keywords, cleaned_data):
     """Apply all the filter keywords to the queryset, take values from cleaned_data.
@@ -100,23 +100,31 @@ def qStellen (request):
     
     tgWertigkeitOhneZusagen = tgWertigkeit.subtract(tgZusageWertigkeit)
 
-    print "dumping Stellen"
-    tgWertigkeit.dump()
-    print "dumping Stellen ohne Zusagen"
-    tgWertigkeitOhneZusagen.dump()
+    ## print "dumping Stellen"
+    ## tgWertigkeit.dump()
+    ## print "dumping Stellen ohne Zusagen"
+    ## tgWertigkeitOhneZusagen.dump()
 
+    
+    renderDir =  {'form': ff,
+                  'urlTarget': 'qStellen',
+                  'stellen': stellentab,
+                  'gruppe': tgArt.asTable(request),
+                  'wertigkeit': tgWertigkeit.asTable(request),
+                  'wertigkeitGantt': tgWertigkeit.asjGantt("wertigkeitGantt"),
+                  'stellenOhneZusagen': tgWertigkeitOhneZusagen.asTable(request),
+                  'gantt': tgWertigkeitOhneZusagen.asjGantt("gantt") ,
+                  }
+    tgArt.asAccordion ("Stellen nach Finanzierung gruppiert", renderDir, request)
+    tgWertigkeit.asAccordion ("Stellen nach Wertigkeit gruppiert", renderDir, request)
+    tgWertigkeitOhneZusagen.asAccordion ("Stellen nach Wertigkeit gruppiert, Zusagen abgezogen", renderDir, request)
+
+    pp = pprint.PrettyPrinter()
+    pp.pprint (renderDir)
 
     return render (request,
                    "stellenplan/qStellen.html",
-                   {'form': ff,
-                    'urlTarget': 'qStellen',
-                    'stellen': stellentab,
-                    'gruppe': tgArt.asTable(request),
-                    'wertigkeit': tgWertigkeit.asTable(request),
-                    'wertigkeitGantt': tgWertigkeit.asjGantt("wertigkeitGantt"),
-                    'stellenOhneZusagen': tgWertigkeitOhneZusagen.asTable(request),
-                    'gantt': tgWertigkeitOhneZusagen.asjGantt("gantt") ,
-                       })
+                   renderDir)
 
 
 def offeneZusagen(request):
