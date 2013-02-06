@@ -3,6 +3,7 @@
 from datetime import timedelta 
 import django_tables2
 import tables
+import copy
 
 import datetime
 
@@ -142,14 +143,14 @@ class TimelineGroups ():
 
         return tbl
 
-    def asjGantt (self):
+    def asjGantt (self, tag):
         r = """
         <script>
         $(function() {
           "use strict";
-          $(".gantt").gantt({
+          $(".%s").gantt({
             source: [{
-        """
+        """ % tag
 
         rr = []
         # iterate over the individual timelines, gives one chart entry each
@@ -185,8 +186,9 @@ class TimelineGroups ():
     def subtract (self, minuend):
         """Create a NEW tg, subtract the minuend, and return the newly created tg"""
 
-        tg = TimelineGroups()
-        tg.tlg = self.tlg
+        # tg = TimelineGroups()
+        # tg.tlg = self.tlg
+        tg = copy.deepcopy(self) 
 
         # stelle sicher, dass alle im Minuenden vorkommenden keys auch im REsultat vorkommen
         for k in minuend.tlg.keys():

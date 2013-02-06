@@ -1,5 +1,14 @@
 {% extends "stellenplan/qBasic.html" %}
+
+
 {% load render_table from django_tables2 %}
+
+{% block extrahead %}
+{{ block.super }}
+
+{{ wertigkeitGantt|safe }} 
+
+{% endblock extrahead %}
 
 {% block content %}
 
@@ -12,11 +21,14 @@
 <div id="accordion">
 <h3> Alle Stellen, ohne Berücksichtigung von Zusagen </h3>
 <div>
+
+
 <div id="tabs">
 <ul>
   <li> <a href="#tabs-details">Stellendetails </a> </li>
   <li> <a href="#tabs-art">Gruppiert nach Finanzierung</a> </li>
   <li> <a href="#tabs-wertigkeit">Gruppiert nach Wertigkeit</a> </li>
+  <li> <a href="#tabs-wertigkeitGantt">Gruppiert nach Wertigkeit, Gantt</a> </li>
 </ul>
 <div id="tabs-details">
 {% render_table stellen %}
@@ -29,20 +41,36 @@
 <div id="tabs-wertigkeit">
 {% render_table wertigkeit %}
 </div>
-</div>
+
+<div id="tabs-wertigkeitGantt">
+<div class="wertigkeitGantt"></div>
 </div>
 
-<h3> Stellen nach Wertigkeit gruppiert, Zusagen sind abgezogen </h3>
+
+</div>
+
+
+
+</div>
+
+
+
+<h3> Stellen nach Wertigkeit gruppiert, Zusagen sind abgezogen, als Tabelle</h3>
 
 <div>
   {% render_table stellenOhneZusagen %}
 </div>
 
-<h3> Als Gantt-Chart </h3>
-<div class="contain">
+<h3> Stellen nach Wertigkeit gruppiert, Zusagen sind abgezogen, als Gantt Chart</h3>
+
+<div>
 <div class="gantt"></div>
 </div>
+
 </div>
+
+
+
 
 {% endif %}
 
