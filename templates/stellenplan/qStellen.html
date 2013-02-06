@@ -6,17 +6,6 @@
 {% block extrahead %}
 {{ block.super }}
 
-<script>
-$(function() {
-$( "#tabs" ).tabs();
-});
-</script>
-
-<script>
-$(function() {
-$( "#tabs1" ).tabs();
-});
-</script>
 
 
 {% if Accordion %}
@@ -38,8 +27,6 @@ $( "#tabs1" ).tabs();
 {% endif %} 
 
 
-{{ gantt|safe }}
-{{ wertigkeitGantt|safe }} 
 
 {% endblock extrahead %}
 
@@ -48,11 +35,9 @@ $( "#tabs1" ).tabs();
 {{ block.super }}
 
 {% if error_message %}
+<!-- error, dont do anything -->
 
 {% else %}
-
-
-
 
 
 {% if Accordion %}
@@ -92,57 +77,6 @@ $( "#tabs1" ).tabs();
   {% endfor %}
   </div> <!-- end accordion --> 
 {% endif %} 
-
-
-<h2> Manuelles Accordion </h2>
-
-<div id="accordion">
-
-<h3> Stellen nach Wertigkeit gruppiert, Zusagen sind abgezogen, als Tabelle</h3>
-<div>
-  <div id="tabs1">
-    <ul>
-      <li><a href="#tabs1-2">Proin dolor</a></li>
-      <li><a href="#tabs1-3">Aenean lacinia</a></li>
-    </ul>
-    <div id="tabs1-2">
-      {% render_table stellenOhneZusagen %}
-    </div>
-    <div id="tabs1-3">
-      <div class="gantt"></div>
-    </div>
-  </div>
-</div>
-
-<h3> Alle Stellen, ohne Berücksichtigung von Zusagen </h3>
-<div>
-  <div id="tabs">
-    <ul>
-      <li> <a href="#tabs-details">Stellendetails </a> </li>
-      <li> <a href="#tabs-art">Gruppiert nach Finanzierung</a> </li>
-      <li> <a href="#tabs-wertigkeit">Gruppiert nach Wertigkeit</a> </li>
-      <li> <a href="#tabs-wertigkeitGantt">Gruppiert nach Wertigkeit, Gantt</a> </li>
-    </ul>
-    <div id="tabs-details">
-      {% render_table stellen %}
-    </div>
-    <div id="tabs-art">
-      {% render_table gruppe %}
-    </div>
-    <div id="tabs-wertigkeit">
-      {% render_table wertigkeit %}
-    </div>
-    <div id="tabs-wertigkeitGantt">
-      <div class="wertigkeitGantt">
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-<!-- end of accordion --!> 
-</div>   
 
 
 

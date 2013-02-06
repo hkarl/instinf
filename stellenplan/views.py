@@ -101,20 +101,10 @@ def qStellen (request):
     
     tgWertigkeitOhneZusagen = tgWertigkeit.subtract(tgZusageWertigkeit)
 
-    ## print "dumping Stellen"
-    ## tgWertigkeit.dump()
-    ## print "dumping Stellen ohne Zusagen"
-    ## tgWertigkeitOhneZusagen.dump()
-
+    # und noch die render-Ifnormation zusammensetzen, insbes. um die Accordions und tabs automatisch aufbauen zu können 
     
     renderDir =  {'form': ff,
                   'urlTarget': 'qStellen',
-                  'stellen': stellentab,
-                  'gruppe': tgArt.asTable(request),
-                  'wertigkeit': tgWertigkeit.asTable(request),
-                  'wertigkeitGantt': tgWertigkeit.asjGantt("wertigkeitGantt"),
-                  'stellenOhneZusagen': tgWertigkeitOhneZusagen.asTable(request),
-                  'gantt': tgWertigkeitOhneZusagen.asjGantt("gantt") ,
                   }
 
 
@@ -124,10 +114,8 @@ def qStellen (request):
     
     tgArt.asAccordion ("Stellen nach Finanzierung gruppiert", renderDir, request)
     tgWertigkeit.asAccordion ("Stellen nach Wertigkeit gruppiert", renderDir, request)
-    tgWertigkeitOhneZusagen.asAccordion ("Stellen nach Wertigkeit gruppiert, Zusagen abgezogen", renderDir, request)
-
-    pp = pprint.PrettyPrinter()
-    pp.pprint (renderDir)
+    tgWertigkeitOhneZusagen.asAccordion ("Stellen nach Wertigkeit gruppiert, Zusagen abgezogen",
+                                         renderDir, request)
 
     return render (request,
                    "stellenplan/qStellen.html",
