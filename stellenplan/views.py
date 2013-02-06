@@ -10,7 +10,8 @@ from django.forms.widgets import CheckboxSelectMultiple
 import tables
 from django_tables2   import RequestConfig
 import django_tables2 
-import pprint 
+import pprint
+import accordion 
 
 def standardfilters (qs, keywords, cleaned_data):
     """Apply all the filter keywords to the queryset, take values from cleaned_data.
@@ -115,6 +116,12 @@ def qStellen (request):
                   'stellenOhneZusagen': tgWertigkeitOhneZusagen.asTable(request),
                   'gantt': tgWertigkeitOhneZusagen.asjGantt("gantt") ,
                   }
+
+
+    ac = accordion.Accordion ("Stellen insgesamt")
+    ac.addContent (stellentab)
+    renderDir['Accordion'] = [ac] 
+    
     tgArt.asAccordion ("Stellen nach Finanzierung gruppiert", renderDir, request)
     tgWertigkeit.asAccordion ("Stellen nach Wertigkeit gruppiert", renderDir, request)
     tgWertigkeitOhneZusagen.asAccordion ("Stellen nach Wertigkeit gruppiert, Zusagen abgezogen", renderDir, request)

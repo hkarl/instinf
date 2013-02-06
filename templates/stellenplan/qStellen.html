@@ -61,6 +61,12 @@ $( "#tabs1" ).tabs();
   {% for h in Accordion %}
     <h3> {{ h.title }} </h3>
     <div>
+      {% if h.mainContent %}
+        {% render_table h.mainContent %}
+      {% endif %}
+
+      <!-- TODO:  only insert tabs if they are present -->
+      {% if h.content|length > 0 %}
       <div id="tabs-{{h.key}}">
 	<ul>
 	  {% for refs in h.content %}
@@ -80,7 +86,8 @@ $( "#tabs1" ).tabs();
 	    {% endifequal %} 
 	  </div>
 	{% endfor %} 
-      </div> <!-- end of div tabs --> 
+      </div> <!-- end of div tabs -->
+      {% endif %}
     </div>
   {% endfor %}
   </div> <!-- end accordion --> 
