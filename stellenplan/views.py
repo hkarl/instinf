@@ -64,12 +64,12 @@ def qStellen (request):
         if not ff.is_valid():
             print "error"
             return render (request,
-                           "stellenplan/qStellen.html",
+                           url,
                            {'error_message': 'Bitte berichtigen Sie folgenden Fehler: ',
-                            'form': ff,
-                            'urlTarget': 'qStellen',                           
-})
-
+                           'form': ff,
+                           'urlTarget': 'qStellen',                           
+                               })
+        
     else:
         # empty request, neu aufbauen 
         ff = StellenFilterForm ()
