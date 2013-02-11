@@ -213,7 +213,7 @@ class Zuordnung (models.Model):
     von = models.DateField ("Zuordnungsbeginn",
                       help_text="Ab wann ist die Stelle dem Fachgebiet zugeordnet?")
     bis = models.DateField ("Zuordnungsende",
-                      help_text="Bis wann gil die Zuordnung?")
+                      help_text="Bis wann gilt die Zuordnung?")
     annmerkung = models.TextField ("Anmerkungen",
                              help_text="Beliebige Anmerkungen.",
                              blank=True,

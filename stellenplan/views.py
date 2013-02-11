@@ -17,6 +17,9 @@ def standardfilters (qs, keywords, cleaned_data):
     """Apply all the filter keywords to the queryset, take values from cleaned_data.
     Von and Bis are always applied, nbo need to specify them in the keywords """
 
+    ## print "standardfilters: ", keywords
+    ## print pp(cleaned_data)
+
     if cleaned_data['Von']:
         qs = qs.exclude (bis__lt = cleaned_data['Von'])
     if cleaned_data['Bis']:
@@ -37,13 +40,22 @@ class qForm (forms.Form):
         Von = forms.fields.DateField(required=False)
         Bis = forms.fields.DateField(required=False)
 
+        def clean(self):
+            cleaned_data = super(qForm, self).clean()
+
+            if (cleaned_data['Von'] and
+                cleaned_data['Bis'] and
+                cleaned_data['Von'] > cleaned_data['Bis']):
+                print "raising error"
+                raise forms.ValidationError ("Das Von Datum muss vor dem Bis Datum liegen.")
+            return cleaned_data 
+
+
 #########################################################
 
 def qStellen (request):
 
-    class StellenFilterForm (forms.Form):
-        Von = forms.fields.DateField(required=False)
-        Bis = forms.fields.DateField(required=False)
+    class StellenFilterForm (qForm):
         Wertigkeit = forms.fields.ChoiceField (choices=[('-----', '----')]
                                                + sorted([(x.wertigkeit,x.wertigkeit)
                                                   for x in Stellenwertigkeit.objects.all() ]),
@@ -53,15 +65,6 @@ def qStellen (request):
                                                   for x in Stellenart.objects.all() ]),
                                                 required=False)
 
-        def clean(self):
-            cleaned_data = super(StellenFilterForm, self).clean()
-
-            if (cleaned_data['Von'] and
-                cleaned_data['Bis'] and
-                cleaned_data['Von'] > cleaned_data['Bis']):
-                print "raising error"
-                raise forms.ValidationError ("Das Von Datum muss vor dem Bis Datum liegen.")
-            return cleaned_data 
 
     ################
     if not request.method == 'GET':
@@ -131,13 +134,19 @@ def qStellen (request):
                    "stellenplan/qStellen.html",
                    renderDir)
 
+##############################################################
 
 def qZusagen(request):
-
+    """
+    Abfragen für Zusagen.
+    Filter nach Datum, Fachgebiet, Wertigkeit.
+    Zusagen sind durch Zuordnungen unterlegt; interessant sind also Zusagen, für die
+    es keine Zuordnungen gibt. 
+    """
 
     # Version mit forms Library:
 
-    class zusagenFilterForm (forms.Form):
+    class zusagenFilterForm (qForm):
         Fachgebiet = forms.fields.ChoiceField (choices=[('-----', '----')]
                                                + [(x,x) for x in Fachgebiet.objects.all() ],
             required=False)
@@ -145,8 +154,6 @@ def qZusagen(request):
                                                + [(x.wertigkeit,x.wertigkeit)
                                                   for x in Stellenwertigkeit.objects.all() ],
             required=False)
-        Von = forms.fields.DateField(required=False)
-        Bis = forms.fields.DateField(required=False)
         ## Auswahl = forms.fields.MultipleChoiceField (widget=CheckboxSelectMultiple,
         ##                                             required=False, 
         ##                                             choices = [('komplettoffen', 'Komplette offene Zusagen'),
@@ -158,12 +165,6 @@ def qZusagen(request):
         def clean(self):
             cleaned_data = super(zusagenFilterForm, self).clean()
 
-            if (cleaned_data['Von'] and
-                cleaned_data['Bis'] and
-                cleaned_data['Von'] > cleaned_data['Bis']):
-                print "raising error"
-                raise forms.ValidationError ("Das Von Datum muss vor dem Bis Datum liegen.")
-            ## idea: suppose Fachgebiet already has a value, then limit the choices for Wwertigkeit
             print Fachgebiet, cleaned_data['Fachgebiet']
             if ((cleaned_data['Fachgebiet'] != '-----') and
                 (cleaned_data['Wertigkeit'] == '-----')):
@@ -201,7 +202,7 @@ def qZusagen(request):
         # empty request, neu aufbauen 
         ff = zusagenFilterForm ()
         ff.cleaned_data = {'Fachgebiet': '-----',
-                           'Art': '-----',
+                           'Wertigkeit': '-----',
                            'Von': None,
                            'Bis': None}
 
@@ -220,9 +221,24 @@ def qZusagen(request):
     renderDir['Accordion'] = [ac]
 
     tgWertigkeit = TimelineGroups(qs, 'wertigkeit')
-    tgWertigkeit.asAccordion ("Zusagen nach Wertigkeit gruppiert",
+    tgWertigkeit.asAccordion ("Zusagen, nach Wertigkeit gruppiert",
                              renderDir, request)
 
+        # Zuordnungen abziehen:
+        # hier muss man noch einen join mit Stellen machen, ob die tatsächliche Stellenwertigkeit zu bekommen? 
+    qsZuordnung = standardfilters (Zuordnung.objects.all(),
+                                   ['Fachgebiet'],
+                                   ff.cleaned_data)
+    pp ([z for z in  qsZuordnung])
+    if not ff.cleaned_data['Wertigkeit'] == '-----':
+        qsZuordnung = qsZuordnung.filter (stelle__wertigkeit__exact = ff.cleaned_data['Wertigkeit'])
+
+    pp ([z for z in  qsZuordnung])
+    
+    tgZuordnungWertigkeit = TimelineGroups(qsZuordnung, 'stelle__wertigkeit')
+    tgZusagenOhneZuordnung = tgWertigkeit.subtract(tgZuordnungWertigkeit)
+    tgZusagenOhneZuordnung.asAccordion ("Offene Zusagen (Zuordnungen sind abgezogen)",
+                                        renderDir, request)
     
     return render (request,
                    "stellenplan/qZusagen.html",
