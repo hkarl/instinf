@@ -109,9 +109,7 @@ class qBesetzung (stellenplanQuery):
 
 
     def constructAccordion (self, request):
-        # print "filtering according to Besetzung" 
 
-        ########################################
         #  die Besetzungen wie üblich filtern: 
         allBesetzung = Besetzung.objects.all()
 
@@ -139,11 +137,7 @@ class qStellen (stellenplanQuery):
     
 
     def constructAccordion (self, request):
-        # print "filtering according to Besetzung" 
 
-        ac = []
-
-        ########################################
         #  die Stellen wie üblich filtern: 
         allStellen = Stelle.objects.all()
 
@@ -198,8 +192,71 @@ class qStellen (stellenplanQuery):
         
         ########################################
 
+
+
+#########################################################
+
+
+class qZusagen (stellenplanQuery):
+    """
+    Abfragen für Zusagen.
+    Filter nach Datum, Fachgebiet, Wertigkeit.
+    Zusagen sind durch Zuordnungen unterlegt; interessant sind also Zusagen, für die
+    es keine Zuordnungen gibt. 
+    """
+
+    urlTarget = "qZusagen"
+    queryFormClass = zusagenFilterForm
+    additionalFields = {'Wertigkeit': '-----',
+                        'Fachgebiet': '-----'}
     
+
+    def constructAccordion (self, request):
+
+        # wie ueblich zunaechst eine Uberblick ueber Zusagen, gefiltert 
+        qs = standardfilters (Zusage.objects.all(),
+                              ['Fachgebiet', 'Wertigkeit'],
+                              self.ff.cleaned_data)
+        overviewtab = tables.ZusagenTable (qs)
+        RequestConfig (request).configure(overviewtab)
+
+        a = accordion.Accordion ("Zusagen insgesamt")
+        a.addContent (overviewtab)
+
+        self.renderDir['Accordion'].append(a)
+
+        ########################################
+
+
+        # Zusagen nach Wertigkeit gruppiert ausgeben
+        tgWertigkeit = TimelineGroups(qs, 'wertigkeit')
+        tgWertigkeit.asAccordion ("Zusagen, nach Wertigkeit gruppiert",
+                                  self.renderDir, request)
+        
+        ## # Zusagen, nach Fachgebiet gruppiert
+        ## # Achtung, das ist sinnlos!
+        ## # Man könnte das höchstens mit Personalpunkten gewichten  - TODO!! 
+        ## tgFachgebiet = TimelineGroups(qs, 'fachgebiet')
+        ## tgFachgebiet.asAccordion ("Zusagen, nach Fachgebiet gruppiert",
+        ##                           self.renderDir, request)
+
+
+        # Zusagen nach Wertigkeit gruppiert ausgeben - davon die entsprechenden
+        # gruppierten ZuORDNUNGEN abziehen
+
+        qsZuordnung = standardfilters (Zuordnung.objects.all(),
+                                       ['Fachgebiet'],
+                                       self.ff.cleaned_data)
+        if not self.ff.cleaned_data['Wertigkeit'] == '-----':
+            qsZuordnung = qsZuordnung.filter (stelle__wertigkeit__exact =
+                                              self.ff.cleaned_data['Wertigkeit'])
+        tgZuordnungWertigkeit = TimelineGroups(qsZuordnung, 'stelle__wertigkeit')
+        
+        tgZusagenOhneZuordnung = tgWertigkeit.subtract(tgZuordnungWertigkeit)
+        tgZusagenOhneZuordnung.asAccordion ("Offene Zusagen (Zuordnungen sind abgezogen), nach Wertigkeit gruppiert",
+                                            self.renderDir, request)
     
+
 #########################################################
 #########################################################
 #########################################################
@@ -208,14 +265,7 @@ class qStellen (stellenplanQuery):
 ##############################################################
 
 
-def qZusagen(request):
-    """
-    Abfragen für Zusagen.
-    Filter nach Datum, Fachgebiet, Wertigkeit.
-    Zusagen sind durch Zuordnungen unterlegt; interessant sind also Zusagen, für die
-    es keine Zuordnungen gibt. 
-    """
-
+def qZusagen_func (request):
     # Version mit forms Library:
 
 
@@ -239,7 +289,7 @@ def qZusagen(request):
                                })
         
     else:
-        # empty request, neu aufbauen 
+        # empty request, neu aufbauen zus
         ff = zusagenFilterForm ()
         ff.cleaned_data = {'Fachgebiet': '-----',
                            'Wertigkeit': '-----',
