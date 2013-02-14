@@ -287,8 +287,4 @@ def qZusagen(request):
 
 
 
-class offeneStellenList (ListView):
-    model = Stelle
-    template_name = "stellenplan/offeneStellen.html"
-    context_object_name = "stellen"
 
