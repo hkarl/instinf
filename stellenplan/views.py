@@ -89,7 +89,8 @@ class stellenplanQuery (View):
 
         ## pp(self.renderDir) 
         ## print self.renderDir['form']
-        self.renderDir['Accordion'] = self.constructAccordion (request)
+        self.renderDir['Accordion'] = []
+        self.constructAccordion (request)
 
         return render (request,
                        "stellenplan/" + self.__class__.urlTarget + ".html",
@@ -103,16 +104,12 @@ class stellenplanQuery (View):
     
 class qBesetzung (stellenplanQuery):
     """This is just an empty class"""
-    additionalFields = {'Wertigkeit': '-----',
-                        'Art': '-----'}
     urlTarget = 'qBesetzung'
     queryFormClass = BesetzungFilterForm 
 
 
     def constructAccordion (self, request):
-        print "filtering according to Besetzung" 
-
-        ac = []
+        # print "filtering according to Besetzung" 
 
         ########################################
         #  die Besetzungen wie üblich filtern: 
@@ -126,10 +123,80 @@ class qBesetzung (stellenplanQuery):
         a = accordion.Accordion ("Besetzungen")
         a.addContent (besetzungstab)
 
-        ac.append(a)
+        self.renderDir['Accordion'].append(a)
         ########################################
 
-        return ac 
+
+
+#########################################################
+
+
+class qStellen (stellenplanQuery):
+    urlTarget = "qStellen"
+    queryFormClass = StellenFilterForm
+    additionalFields = {'Wertigkeit': '-----',
+                        'Art': '-----'}
+    
+
+    def constructAccordion (self, request):
+        # print "filtering according to Besetzung" 
+
+        ac = []
+
+        ########################################
+        #  die Stellen wie üblich filtern: 
+        allStellen = Stelle.objects.all()
+
+        # alle Besetzungen nach Standardfilter 
+        qs = standardfilters (allStellen,
+                              ['Wertigkeit', 'Art'],
+                              self.ff.cleaned_data)
+        stellentab = tables.StellenTable (qs) 
+        RequestConfig (request).configure(stellentab)
+
+        a = accordion.Accordion ("Stellen insgesamt")
+        a.addContent (stellentab)
+
+        self.renderDir['Accordion'].append(a)
+
+        ########################################
+
+        # gefilterte Stellen nach Wertigkeit zusammenfassen
+        tgWertigkeit = TimelineGroups (qs,'wertigkeit')
+        tgWertigkeit.asAccordion ("Stellen nach Wertigkeit gruppiert",
+                                  self.renderDir, request)
+
+        #########
+
+        # gefilterte Stellen nach Finanzierung zusammenfassen
+        TimelineGroups (qs,
+                        'art').asAccordion ("Stellen nach Finanzierung gruppiert",
+                                            self.renderDir, request)
+
+
+
+        ########################################
+
+        # von den Stellen die Zusagen abziehen
+        # ziehe von den Stellen die Zusagen ab.
+        # Dazu erstmal die Zusagen entsprechend filtern,
+        # dann ueber timelinegroups verarbeiten.
+        # Da nur StellenTYPEN, aber nicht spezifischer STellen
+        # zugesagt werdne, macht es keinen Sinn,
+        # das individuell pro Stellen zu machen, sondern nur für
+        # entsprechende Aggregierungen
+
+
+        zusageQs = standardfilters (Zusage.objects.all(),
+                                    ['Wertigkeit'], self.ff.cleaned_data)
+        tgZusageWertigkeit = TimelineGroups (zusageQs, 'wertigkeit')
+        tgWertigkeitOhneZusagen = tgWertigkeit.subtract(tgZusageWertigkeit)
+
+        tgWertigkeitOhneZusagen.asAccordion ("Stellen nach Wertigkeit gruppiert, Zusagen abgezogen",
+                                             self.renderDir, request)
+        
+        
+        ########################################
 
     
     
@@ -138,7 +205,7 @@ class qBesetzung (stellenplanQuery):
 #########################################################
 
 @require_http_methods(["GET"])
-def qStellen (request):
+def qStellen_func (request):
     # decorator guarantess only GET makes it here
     
 
