@@ -7,4 +7,5 @@ urlpatterns = patterns('',
     url(r'qZusagen', views.qZusagen, name='qZusagen'),
     # url(r'qZuordnungen', views.qZuordnungen, name='qZuordnungen'),
     url(r'^qStellen$', views.qStellen, name='qStellen'),
+    url(r'^qBesetzung$', views.qBesetzung.as_view(), name='qBesetzung'),
 )

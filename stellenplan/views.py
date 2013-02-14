@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 
 # from django.http import HttpResponse
-from django.views.generic import ListView
+from django.views.generic import ListView, View
 from django.shortcuts import render
 from stellenplan.models import * 
 from stellenplan.timeline import Timeline, TimelineGroups
-from django import forms
 from django.forms.widgets import CheckboxSelectMultiple
 import tables
 from django_tables2   import RequestConfig
 import django_tables2 
 from pprint import pprint as pp 
 import accordion 
+from django.views.decorators.http import require_http_methods
+from stellenplanForms import * 
+
 
 def standardfilters (qs, keywords, cleaned_data):
     """Apply all the filter keywords to the queryset, take values from cleaned_data.
@@ -34,42 +36,93 @@ def standardfilters (qs, keywords, cleaned_data):
     return qs 
 
 
-#########################################################
-
-class qForm (forms.Form): 
-        Von = forms.fields.DateField(required=False)
-        Bis = forms.fields.DateField(required=False)
-
-        def clean(self):
-            cleaned_data = super(qForm, self).clean()
-
-            if (cleaned_data['Von'] and
-                cleaned_data['Bis'] and
-                cleaned_data['Von'] > cleaned_data['Bis']):
-                print "raising error"
-                raise forms.ValidationError ("Das Von Datum muss vor dem Bis Datum liegen.")
-            return cleaned_data 
-
 
 #########################################################
 
+class stellenplanQuery (View):
+
+    additionalFields = {}
+    """
+    additional fields is a dictionary, mapping field names to defaults. 
+    """
+
+    urlTarget = ''
+    queryFormClass = qForm 
+        
+    def applyFilters (self, request):
+        """
+        construct the renderDir dictionary, containting the filter results in
+        accprdions.
+        """
+        pass 
+    
+    def get(self, request):
+        # print request 
+        if not request.method == 'GET':
+            return  HttpResponseNotFound('<h1>Request type not supported!</h1>')
+
+        if request.GET:
+            # es gibt schon eine Anfrage
+            self.ff = self.__class__.queryFormClass (request.GET)
+            if not self.ff.is_valid():
+                print "error"
+                return render (request,
+                               url,
+                               {'error_message': 'Bitte berichtigen Sie folgenden Fehler: ',
+                               'form': self.ff,
+                               'urlTarget': self.__class__.urlTarget,                           
+                                   })
+            
+        else:
+            # empty request, neu aufbauen
+            print "empty request!" 
+            self.ff = self.__class__.queryFormClass (request.GET)
+            self.ff.cleaned_data = {'Von': None,
+                                    'Bis': None}
+            self.ff.cleaned_data.update(self.__class__.additionalFields)
+
+
+        self.renderDir = {
+            'form': self.ff,
+            'urlTarget': self.__class__.urlTarget,
+            }
+
+        pp(self.renderDir) 
+        print self.renderDir['form']
+        self.applyFilters (request)
+
+        return render (request,
+                       "stellenplan/" + self.__class__.urlTarget + ".html",
+                       self.renderDir)
+
+        
+
+
+#################################
+
+    
+class qBesetzung (stellenplanQuery):
+    """This is just an empty class"""
+    additionalFields = {'Wertigkeit': '-----',
+                        'Art': '-----'}
+    urlTarget = 'qBesetzung'
+    queryFormClass = BesetzungFilterForm 
+
+
+    def applyFilters (self, request):
+        print "filtering according to Besetzung" 
+
+
+    
+    
+#########################################################
+#########################################################
+#########################################################
+
+@require_http_methods(["GET"])
 def qStellen (request):
-
-    class StellenFilterForm (qForm):
-        Wertigkeit = forms.fields.ChoiceField (choices=[('-----', '----')]
-                                               + sorted([(x.wertigkeit,x.wertigkeit)
-                                                  for x in Stellenwertigkeit.objects.all() ]),
-                                                required=False)
-        Art =  forms.fields.ChoiceField (choices=[('-----', '----')]
-                                               + sorted([(x.stellenart,x.stellenart)
-                                                  for x in Stellenart.objects.all() ]),
-                                                required=False)
-
-
-    ################
-    if not request.method == 'GET':
-        return HttpResponseNotFound('<h1>Request type not supported!</h1>')
-
+    # decorator guarantess only GET makes it here
+    
 
     if request.GET:
         # es gibt schon eine Anfrage
@@ -130,11 +183,14 @@ def qStellen (request):
     tgWertigkeitOhneZusagen.asAccordion ("Stellen nach Wertigkeit gruppiert, Zusagen abgezogen",
                                          renderDir, request)
 
+    # pp(renderDir)
+    # print renderDir['form']
     return render (request,
                    "stellenplan/qStellen.html",
                    renderDir)
 
 ##############################################################
+
 
 def qZusagen(request):
     """
@@ -146,38 +202,6 @@ def qZusagen(request):
 
     # Version mit forms Library:
 
-    class zusagenFilterForm (qForm):
-        Fachgebiet = forms.fields.ChoiceField (choices=[('-----', '----')]
-                                               + [(x,x) for x in Fachgebiet.objects.all() ],
-            required=False)
-        Wertigkeit = forms.fields.ChoiceField (choices=[('-----', '----')]
-                                               + [(x.wertigkeit,x.wertigkeit)
-                                                  for x in Stellenwertigkeit.objects.all() ],
-            required=False)
-        ## Auswahl = forms.fields.MultipleChoiceField (widget=CheckboxSelectMultiple,
-        ##                                             required=False, 
-        ##                                             choices = [('komplettoffen', 'Komplette offene Zusagen'),
-        ##                                                        ('teilweise', 'Teilweise offene Zusagen'),
-        ##                                                        ('erfuellt','Erfüllte Zusagen')],
-        ##                                             initial= ['komplettoffen', 'teilweise','erfuellt',],
-        ## )
-
-        def clean(self):
-            cleaned_data = super(zusagenFilterForm, self).clean()
-
-            print Fachgebiet, cleaned_data['Fachgebiet']
-            if ((cleaned_data['Fachgebiet'] != '-----') and
-                (cleaned_data['Wertigkeit'] == '-----')):
-                print "do something"
-                # get alle Wertigkeiten, die dieses Fachgebiet betreffen und bauen den WErtigkeitsbutton neu zusammen
-                wertig = Zusage.objects.all().filter (fachgebiet__exact=ff.cleaned_data['Fachgebiet']).values('wertigkeit').distinct()
-                print wertig 
-                self.fields['Wertigkeit'].choices  =  ([('-----', '----')]
-                                             + [(x['wertigkeit'],
-                                                 x['wertigkeit'])
-                                                 for x in wertig ])
-
-            return cleaned_data 
 
 
     ################
@@ -237,7 +261,7 @@ def qZusagen(request):
     
     tgZuordnungWertigkeit = TimelineGroups(qsZuordnung, 'stelle__wertigkeit')
     tgZusagenOhneZuordnung = tgWertigkeit.subtract(tgZuordnungWertigkeit)
-    tgZusagenOhneZuordnung.asAccordion ("Offene Zusagen (Zuordnungen sind abgezogen)",
+    tgZusagenOhneZuordnung.asAccordion ("Offene Zusagen (Zuordnungen sind abgezogen), nach Wertigkeit gruppiert",
                                         renderDir, request)
     
     return render (request,
