@@ -16,6 +16,23 @@ class ZusagenTable (tables.Table):
                             args=[A('pk')],
                             attrs= {'target': '_blank'})
 
+
+
+# #################################
+
+class BesetzungTable (tables.Table):
+    class Meta:
+        model = models.Besetzung
+        attrs = {'class': 'paleblue'}
+
+    id = tables.LinkColumn ('admin:stellenplan_besetzung_change',
+                            args=[A('pk')],
+                            attrs= {'target': '_blank'})
+    
+                      
+
+# #################################
+ 
 class StellenTable (tables.Table):
     """Stellen, nicht aggregiert, mit direktem Durchgriff auf einzelne Stellen"""
     class Meta:
@@ -26,21 +43,33 @@ class StellenTable (tables.Table):
                             args=[A('pk')],
                             attrs= {'target': '_blank'})
 
+# #################################
+
+
 class StellenNachWertigkeitTable (tables.Table):
     Wertigkeit = tables.Column()
     Datum = tables.Column()
     Prozent = tables.Column()
+
+# #################################
+
     
 class StellenNachArtTable (tables.Table):
     Art = tables.Column()
     Datum = tables.Column()
     Prozent = tables.Column()
 
+# #################################
+
+
 class StellenNachWertigkeitArtTable (tables.Table):
     Wertigkeit = tables.Column()
     Art = tables.Column()
     Datum = tables.Column()
     Prozent = tables.Column()
+
+# #################################
+
 
 class GruppenTable (tables.Table):
     class Meta:

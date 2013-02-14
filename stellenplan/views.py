@@ -49,12 +49,12 @@ class stellenplanQuery (View):
     urlTarget = ''
     queryFormClass = qForm 
         
-    def applyFilters (self, request):
+    def constructAccordion (self, request):
         """
         construct the renderDir dictionary, containting the filter results in
         accprdions.
         """
-        pass 
+        return [] 
     
     def get(self, request):
         # print request 
@@ -87,9 +87,9 @@ class stellenplanQuery (View):
             'urlTarget': self.__class__.urlTarget,
             }
 
-        pp(self.renderDir) 
-        print self.renderDir['form']
-        self.applyFilters (request)
+        ## pp(self.renderDir) 
+        ## print self.renderDir['form']
+        self.renderDir['Accordion'] = self.constructAccordion (request)
 
         return render (request,
                        "stellenplan/" + self.__class__.urlTarget + ".html",
@@ -109,9 +109,27 @@ class qBesetzung (stellenplanQuery):
     queryFormClass = BesetzungFilterForm 
 
 
-    def applyFilters (self, request):
+    def constructAccordion (self, request):
         print "filtering according to Besetzung" 
 
+        ac = []
+
+        ########################################
+        #  die Besetzungen wie üblich filtern: 
+        allBesetzung = Besetzung.objects.all()
+
+        # alle Besetzungen nach Standardfilter 
+        qs = standardfilters (allBesetzung, [], self.ff.cleaned_data)
+        besetzungstab = tables.BesetzungTable (qs)
+        RequestConfig (request).configure(besetzungstab)
+
+        a = accordion.Accordion ("Besetzungen")
+        a.addContent (besetzungstab)
+
+        ac.append(a)
+        ########################################
+
+        return ac 
 
     
     
