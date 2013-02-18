@@ -38,6 +38,8 @@ class BesetzungFilterForm (qForm):
                                               for x in Person.objects.all() ]),
                                             required=False)
 
+
+
     # IDea 2: Filter all those persons who hold a Stelle in a given Fachgebiet
     # That needs further thought 
     ## Fachgebiet = forms.fields.ChoiceField (choices=[('-----', '----')]
@@ -57,6 +59,13 @@ class StellenFilterForm (qForm):
                                             required=False)
 
 #################################
+class zuordnungenFilterForm (qForm):
+    Fachgebiet = forms.fields.ChoiceField (choices=[('-----', '----')]
+                                           + [(x,x) for x in Fachgebiet.objects.all() ],
+        required=False)
+
+#################################
+
     
 class zusagenFilterForm (qForm):
     Fachgebiet = forms.fields.ChoiceField (choices=[('-----', '----')]

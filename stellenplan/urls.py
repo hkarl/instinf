@@ -9,5 +9,5 @@ urlpatterns = patterns('',
     # url(r'^qStellen$', views.qStellen, name='qStellen'),
     url(r'^qStellen$', views.qStellen.as_view(), name='qStellen'),
     url(r'^qBesetzung$', views.qBesetzung.as_view(), name='qBesetzung'),
-    # url(r'qZuordnungen', views.qZuordnungen, name='qZuordnungen'),
+    url(r'qZuordnungen', views.qZuordnungen.as_view(), name='qZuordnungen'),
 )

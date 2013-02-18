@@ -275,6 +275,30 @@ class qStellen (stellenplanQuery):
 
 #########################################################
 
+class qZuordnungen (stellenplanQuery):
+    urlTarget = "qZuordnungen"
+    queryFormClass = zuordnungenFilterForm
+    additionalFields = {'Fachgebiet': '-----'}
+
+
+    def constructAccordion (self, request):
+
+        # wie ueblich zunaechst eine Uberblick ueber Zusagen, gefiltert 
+        qs = standardfilters (Zuordnung.objects.all(),
+                              ['Fachgebiet'],
+                              self.ff.cleaned_data)
+        overviewtab = tables.ZusagenTable (qs)
+        RequestConfig (request).configure(overviewtab)
+
+        a = accordion.Accordion ("Zuordnungen insgesamt")
+        a.addContent (overviewtab)
+
+        self.renderDir['Accordion'].append(a)
+
+    
+
+#########################################################
+
 
 class qZusagen (stellenplanQuery):
     """

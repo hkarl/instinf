@@ -84,6 +84,23 @@ class latexableTable (tables.Table):
         # print r 
         return r 
 
+# #################################
+
+
+class ZuordnungenTable (latexableTable):
+    fieldsForLatex = ['fachgebiet', 'stelle', 'prozent', 'von', 'bis']
+
+
+    class Meta:
+        model = models.Zuordnung
+        attrs = {'class': 'paleblue'}
+    #  some django vodoo
+    # compare: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#reversing-admin-urls
+    # and: http://django-tables2.readthedocs.org/en/latest/#django_tables2.columns.LinkColumn
+    id = tables.LinkColumn ('admin:stellenplan_zuordnung_change',
+                            args=[A('pk')],
+                            attrs= {'target': '_blank'})
+
 
 class ZusagenTable (latexableTable):
     """Zusagen, nicht aggregiert, mit direktem Durchgriff auf einzelne Zusagenobjekte"""
