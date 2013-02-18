@@ -12,7 +12,7 @@ class latexableTable (tables.Table):
 
     """
     Intermediate class to teach django tables to output themselves as LaTeX code.
-    Class-based attributes control behvaior:
+    Class-based attributes control behvaior:  
     - fieldsForLaTeX is a list with the column names that should be output; if empty, all columsn. column names correspond to the field names in the model 
     - columnwidthForLatex is a list with STRINGS that have p{} parameters for column width (not yet implemented) 
     """
