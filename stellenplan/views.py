@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # from django.http import HttpResponse
+from django.conf import settings
 from django.views.generic import ListView, View
 from django.shortcuts import render
 from stellenplan.models import * 
@@ -13,6 +14,8 @@ from pprint import pprint as pp
 import accordion 
 from django.views.decorators.http import require_http_methods
 from stellenplanForms import * 
+import os, codecs
+import subprocess 
 
 
 def standardfilters (qs, keywords, cleaned_data):
@@ -55,6 +58,40 @@ class stellenplanQuery (View):
         accprdions.
         """
         return [] 
+
+
+    def producePDF (self):
+        # print 'Media:', settings.STATICFILES_DIRS[0]
+
+        workdir = settings.STATICFILES_DIRS[0]
+        fp = os.path.join(settings.STATICFILES_DIRS[0], 'report.tex')
+        
+        preface = r"""
+        \documentclass{article}
+        \usepackage{booktabs}
+        \begin{document}
+        """
+        body = ""
+        for a in self.renderDir['Accordion']:
+            body +=  a.asLatex()
+
+        postface = r"""
+        \end{document}
+        """
+
+        outtext = preface + body + postface
+
+        # write file 
+        fout = codecs.open(fp, 'w', 'utf-8')
+        fout.write (outtext)
+        fout.close()
+
+        # run latex
+        cwd = os.getcwd()
+        os.chdir (workdir)
+        retval = subprocess.call (["pdflatex", '-interaction=nonstopmode', "report.tex"]) 
+        os.chdir (cwd)
+        
     
     def get(self, request):
         # print request 
@@ -65,9 +102,10 @@ class stellenplanQuery (View):
             # es gibt schon eine Anfrage
             self.ff = self.__class__.queryFormClass (request.GET)
             if not self.ff.is_valid():
-                print "error"
+                print "error", self.__class__.urlTarget + '.html'
+                print request 
                 return render (request,
-                               url,
+                               'stellenplan/' + self.__class__.urlTarget + '.html',
                                {'error_message': 'Bitte berichtigen Sie folgenden Fehler: ',
                                'form': self.ff,
                                'urlTarget': self.__class__.urlTarget,                           
@@ -78,7 +116,9 @@ class stellenplanQuery (View):
             print "empty request!" 
             self.ff = self.__class__.queryFormClass (request.GET)
             self.ff.cleaned_data = {'Von': None,
-                                    'Bis': None}
+                                    'Bis': None,
+                                    'PDF': False,
+                                    }
             self.ff.cleaned_data.update(self.__class__.additionalFields)
 
 
@@ -91,6 +131,13 @@ class stellenplanQuery (View):
         ## print self.renderDir['form']
         self.renderDir['Accordion'] = []
         self.constructAccordion (request)
+
+        if self.ff.cleaned_data['PDF']:
+            # here trigger the gneration of the PDF file
+
+            self.producePDF()
+            self.renderDir['pdf'] = True
+            self.renderDir['pdfname'] = 'report.pdf'
 
         return render (request,
                        "stellenplan/" + self.__class__.urlTarget + ".html",
@@ -106,7 +153,8 @@ class qBesetzung (stellenplanQuery):
     """This is just an empty class"""
     urlTarget = 'qBesetzung'
     queryFormClass = BesetzungFilterForm 
-
+    additionalFields = {'Person': '-----',
+                        }
 
     def constructAccordion (self, request):
 
@@ -115,6 +163,20 @@ class qBesetzung (stellenplanQuery):
 
         # alle Besetzungen nach Standardfilter 
         qs = standardfilters (allBesetzung, [], self.ff.cleaned_data)
+
+
+        print self.ff.cleaned_data
+        
+        # add a person filter, if that filter was selected
+        if not self.ff.cleaned_data['Person'] == '-----':
+            qs = qs.filter (person__personalnummer__exact =
+                            self.ff.cleaned_data['Person'])
+
+        ## # add a fachgebiet filter, if that filer was selected 
+        ## if not self.ff.cleaned_data['Fachgebiet'] == '-----':
+        ##     qs = qs.filter (stelle__exact =
+        ##                     self.ff.cleaned_data['Fachgebiet'])
+        
         besetzungstab = tables.BesetzungTable (qs)
         RequestConfig (request).configure(besetzungstab)
 
@@ -124,6 +186,7 @@ class qBesetzung (stellenplanQuery):
         self.renderDir['Accordion'].append(a)
         ########################################
 
+        
 
 
 #########################################################
@@ -186,7 +249,23 @@ class qStellen (stellenplanQuery):
         tgZusageWertigkeit = TimelineGroups (zusageQs, 'wertigkeit')
         tgWertigkeitOhneZusagen = tgWertigkeit.subtract(tgZusageWertigkeit)
 
-        tgWertigkeitOhneZusagen.asAccordion ("Stellen nach Wertigkeit gruppiert, Zusagen abgezogen",
+        tgWertigkeitOhneZusagen.asAccordion ("Stellen nach Wertigkeit gruppiert, ZUSAGEN abgezogen",
+                                             self.renderDir, request)
+        
+        ########################################
+        # und noch mal fast das gleiche, nur jetzt die ZUORDNUNGEN abziehen, 
+
+        qsZuordnung = standardfilters (Zuordnung.objects.all(),
+                                    [], self.ff.cleaned_data)
+        if not self.ff.cleaned_data['Wertigkeit'] == '-----':
+            qsZuordnung = qsZuordnung.filter (stelle__wertigkeit__exact =
+                                              self.ff.cleaned_data['Wertigkeit'])
+        tgZuordnungWertigkeit = TimelineGroups(qsZuordnung, 'stelle__wertigkeit')
+        
+
+        tgWertigkeitOhneZuordnung = tgWertigkeit.subtract(tgZuordnungWertigkeit)
+
+        tgWertigkeitOhneZuordnung.asAccordion ("Stellen nach Wertigkeit gruppiert, ZURODNUNGEN abgezogen",
                                              self.renderDir, request)
         
         
@@ -233,6 +312,9 @@ class qZusagen (stellenplanQuery):
         tgWertigkeit.asAccordion ("Zusagen, nach Wertigkeit gruppiert",
                                   self.renderDir, request)
         
+        ########################################
+
+
         ## # Zusagen, nach Fachgebiet gruppiert
         ## # Achtung, das ist sinnlos!
         ## # Man könnte das höchstens mit Personalpunkten gewichten  - TODO!! 
@@ -240,6 +322,7 @@ class qZusagen (stellenplanQuery):
         ## tgFachgebiet.asAccordion ("Zusagen, nach Fachgebiet gruppiert",
         ##                           self.renderDir, request)
 
+        ########################################
 
         # Zusagen nach Wertigkeit gruppiert ausgeben - davon die entsprechenden
         # gruppierten ZuORDNUNGEN abziehen

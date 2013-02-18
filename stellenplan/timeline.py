@@ -45,7 +45,12 @@ class Timeline:
             rr.update( {'Datum': d, 'Prozent': self.m[d]})
             r.append(rr)
 
-        return r 
+        return r
+
+    def aslatex (self,cols={}):
+        r = []
+        return '\\\\ \n'.join([' & ' + d.__str__() + ' & ' + self.m[d].__str__()
+                               for  d in sorted(self.m.keys())])
 
     def ensure (self, d):
         """Ensure that a given date is a key in the dictionary.
@@ -140,13 +145,26 @@ class TimelineGroups ():
         for k,v in self.tlg.iteritems():
             r.extend(v.aslist({'Gruppe': k}))
 
-        # print r
+        #print r
         
         tbl = tables.GruppenTable(r)
         django_tables2.RequestConfig(request).configure(tbl)
 
         return tbl
+    
+    def asLatexTable (self):
 
+        res = '\\begin{tabular}{ccc}\n \\toprule '
+        res += 'Gruppierung & Datum & Prozent \\\\ \n \\midrule '
+        res += ' \\\\ \\midrule  \midrule \n'.join([ k + '\\\\  \\midrule\n' + v.aslatex({'Gruppe': k})
+                for k,v in  self.tlg.iteritems()])
+
+        res += '\\\\ \\bottomrule \n \\end{tabular}'
+        print res 
+        print "----"
+        return res
+
+    
     def asjGantt (self, tag):
         r = """
         <script>
@@ -187,6 +205,9 @@ class TimelineGroups ():
         # print r
         return r 
 
+    def asLatexGantt (self):
+        return "timelinegroup als latex GRafik ist noch nicht implementiert!!"
+
     def asAccordion (self, title, d, request):
         """
         Turn this timeline group into an accordion entry with two tabs: table and gantt.
@@ -198,8 +219,8 @@ class TimelineGroups ():
 
         key = re.sub (r'[^a-zA-Z0-9]+', '', title)
         ac =  Accordion(title)
-        ac.addtab ("Tabelle", self.asTable(request))
-        ac.addtab ("Gantt", self.asjGantt(key))
+        ac.addtab ("Tabelle", self.asTable(request), latex=self.asLatexTable())
+        ac.addtab ("Gantt", self.asjGantt(key), latex=self.asLatexGantt())
         d['Accordion'].append(ac) 
 
         ## key = re.sub (r'[^a-zA-Z0-9]+', '', title)

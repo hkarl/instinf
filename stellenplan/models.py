@@ -108,7 +108,7 @@ class Stelle (models.Model):
                              
     von = models.DateField ("Stellenbeginn",
                       help_text="Ab wann ist die Stelle verfügbar?")
-    bis = models.DateField ("Stellenenden",
+    bis = models.DateField ("Stellenende",
                       help_text="Wann endet die Verfügbarkeit der Stelle?")
     prozent = models.DecimalField ("Prozent",
                                    max_digits=3,
@@ -167,7 +167,7 @@ class Person (models.Model):
                                auto_now=True)
 
     def __unicode__ (self):
-        return self.name + ", " + self.vorname + " (" + unicode(self.personalnummer) +  ", " + monatsinterval(self) +  ")"
+        return self.name + ", " + self.vorname + " (" + unicode(self.personalnummer) + ")"
 
 ##########################################
 

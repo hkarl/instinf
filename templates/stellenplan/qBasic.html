@@ -87,6 +87,10 @@ buttonImageOnly: true});
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
+{% if pdf %}
+<a href="{% static pdfname %}"> Der erzeugte Report </a>
+{% endif %}
+
 
 <form action = "{% url urlTarget %}" method="GET" >
 {% csrf_token %}
