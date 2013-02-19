@@ -18,6 +18,9 @@ import os, codecs
 import subprocess 
 
 
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+
 def standardfilters (qs, keywords, cleaned_data):
     """Apply all the filter keywords to the queryset, take values from cleaned_data.
     Von and Bis are always applied, nbo need to specify them in the keywords """
@@ -92,7 +95,7 @@ class stellenplanQuery (View):
         retval = subprocess.call (["pdflatex", '-interaction=nonstopmode', "report.tex"]) 
         os.chdir (cwd)
         
-    
+    @method_decorator(login_required)
     def get(self, request):
         # print request 
         if not request.method == 'GET':
