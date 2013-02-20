@@ -1,4 +1,5 @@
 *.py[cod]
+InstitutInformatik.sq
 
 # C extensions
 *.so
