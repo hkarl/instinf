@@ -2,6 +2,7 @@
 {% load staticfiles %}
 {% load url from future %}
 {% load render_table from django_tables2 %}
+{% load django_select2_tags %}
 
 
 {% block extrahead %}
@@ -19,6 +20,9 @@
 <script type="text/javascript" src="{% static 'jquery/js/jquery-ui-1.10.0.custom.min.js'%}"></script>
 <script type="text/javascript" src="{% static 'jquery/development-bundle/ui/i18n/jquery.ui.datepicker-de.js'%}"></script>
 
+
+{% import_django_select2_js %}
+{% import_django_select2_css %}
 
 <script src="{% static 'jgantt/js/jquery.fn.gantt.js' %}"></script>
 

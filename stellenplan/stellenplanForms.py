@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import forms
 from stellenplan.models import * 
-
+from django_select2 import * 
 
 class qForm (forms.Form):
     """
@@ -33,11 +33,19 @@ class BesetzungFilterForm (qForm):
 
     # Idea 1: Filter according to a particular person
 
-    Person = forms.fields.ChoiceField (choices=[('-----', '----')]
+    Person = Select2ChoiceField (choices=[('-----', '----')]
                                            + sorted([(x.personalnummer,x.__unicode__())
                                               for x in Person.objects.all() ]),
-                                            required=False)
-
+                                            required=False,
+                widget = Select2Widget(select2_options={'minimumResultsForSearch': 2,
+                                                        'placeholder': u'----',
+                                                        'width': u'resolve', 
+                                                        'allowClear': 'false', 
+                                                }))
+    ## testfield =  Select2ChoiceField(initial=1,
+    ##     choices=((1, "First"), (2, "Second"), (3, "Third"), ),
+    ##     widget = Select2Widget(select2_options={'minimumResultsForSearch': 2,
+    ##                                             'placeholder': u"blabla"}))
 
 
     # IDea 2: Filter all those persons who hold a Stelle in a given Fachgebiet

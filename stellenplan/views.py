@@ -171,7 +171,8 @@ class qBesetzung (stellenplanQuery):
         print self.ff.cleaned_data
         
         # add a person filter, if that filter was selected
-        if not self.ff.cleaned_data['Person'] == '-----':
+        if not (self.ff.cleaned_data['Person'] == '-----' or
+                self.ff.cleaned_data['Person'] == '' ):
             qs = qs.filter (person__personalnummer__exact =
                             self.ff.cleaned_data['Person'])
 
