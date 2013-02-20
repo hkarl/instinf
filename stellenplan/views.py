@@ -181,6 +181,11 @@ class qBesetzung (stellenplanQuery):
             qs = qs.filter (person__personalnummer__exact =
                             self.ff.cleaned_data['Person'])
 
+        if not self.fieldEmpty ('Stellennummer'):
+            # print "filtering for ", self.ff.cleaned_data['Stellennummer']
+            qs = qs.filter (stelle__stellennummer__exact = 
+                            self.ff.cleaned_data['Stellennummer'])
+            
         ## # add a fachgebiet filter, if that filer was selected 
         ## if not self.ff.cleaned_data['Fachgebiet'] == self.__class__.emptyFieldIndicator:
         ##     qs = qs.filter (stelle__exact =

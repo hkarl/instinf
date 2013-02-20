@@ -42,10 +42,18 @@ class BesetzungFilterForm (qForm):
                                                         'width': u'resolve', 
                                                         'allowClear': 'false', 
                                                 }))
-    ## testfield =  Select2ChoiceField(initial=1,
-    ##     choices=((1, "First"), (2, "Second"), (3, "Third"), ),
-    ##     widget = Select2Widget(select2_options={'minimumResultsForSearch': 2,
-    ##                                             'placeholder': u"blabla"}))
+
+    # IDeas 2: filter according to Stellennummer 
+
+    Stellennummer = Select2ChoiceField (choices=[('-----', '----')]
+                                           + sorted([(s.stellennummer, s.__unicode__())
+                                              for s in Stelle.objects.all() ]),
+                                            required=False,
+                widget = Select2Widget(select2_options={'minimumResultsForSearch': 2,
+                                                        'placeholder': u'----',
+                                                        'width': u'resolve', 
+                                                        'allowClear': 'false', 
+                                                }))
 
 
     # IDea 2: Filter all those persons who hold a Stelle in a given Fachgebiet
