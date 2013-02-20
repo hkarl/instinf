@@ -53,7 +53,8 @@ class stellenplanQuery (View):
     """
 
     urlTarget = ''
-    queryFormClass = qForm 
+    queryFormClass = qForm
+    emptyFieldIndicator = '-----'
         
     def constructAccordion (self, request):
         """
@@ -94,6 +95,11 @@ class stellenplanQuery (View):
         os.chdir (workdir)
         retval = subprocess.call (["pdflatex", '-interaction=nonstopmode', "report.tex"]) 
         os.chdir (cwd)
+
+
+    def fieldEmpty (self, f):
+        return ((self.ff.cleaned_data[f] == stellenplanQuery.emptyFieldIndicator) or
+                (self.ff.cleaned_data[f] == ''))
         
     @method_decorator(login_required)
     def get(self, request):
@@ -156,7 +162,7 @@ class qBesetzung (stellenplanQuery):
     """This is just an empty class"""
     urlTarget = 'qBesetzung'
     queryFormClass = BesetzungFilterForm 
-    additionalFields = {'Person': '-----',
+    additionalFields = {'Person': stellenplanQuery.emptyFieldIndicator,
                         }
 
     def constructAccordion (self, request):
@@ -171,13 +177,12 @@ class qBesetzung (stellenplanQuery):
         print self.ff.cleaned_data
         
         # add a person filter, if that filter was selected
-        if not (self.ff.cleaned_data['Person'] == '-----' or
-                self.ff.cleaned_data['Person'] == '' ):
+        if not self.fieldEmpty ('Person'): 
             qs = qs.filter (person__personalnummer__exact =
                             self.ff.cleaned_data['Person'])
 
         ## # add a fachgebiet filter, if that filer was selected 
-        ## if not self.ff.cleaned_data['Fachgebiet'] == '-----':
+        ## if not self.ff.cleaned_data['Fachgebiet'] == self.__class__.emptyFieldIndicator:
         ##     qs = qs.filter (stelle__exact =
         ##                     self.ff.cleaned_data['Fachgebiet'])
         
@@ -199,8 +204,8 @@ class qBesetzung (stellenplanQuery):
 class qStellen (stellenplanQuery):
     urlTarget = "qStellen"
     queryFormClass = StellenFilterForm
-    additionalFields = {'Wertigkeit': '-----',
-                        'Art': '-----'}
+    additionalFields = {'Wertigkeit': stellenplanQuery.emptyFieldIndicator,
+                        'Art': stellenplanQuery.emptyFieldIndicator}
     
 
     def constructAccordion (self, request):
@@ -261,7 +266,8 @@ class qStellen (stellenplanQuery):
 
         qsZuordnung = standardfilters (Zuordnung.objects.all(),
                                     [], self.ff.cleaned_data)
-        if not self.ff.cleaned_data['Wertigkeit'] == '-----':
+        
+        if not self.fieldEmpty('Wertigkeit'):
             qsZuordnung = qsZuordnung.filter (stelle__wertigkeit__exact =
                                               self.ff.cleaned_data['Wertigkeit'])
         tgZuordnungWertigkeit = TimelineGroups(qsZuordnung, 'stelle__wertigkeit')
@@ -282,7 +288,7 @@ class qStellen (stellenplanQuery):
 class qZuordnungen (stellenplanQuery):
     urlTarget = "qZuordnungen"
     queryFormClass = zuordnungenFilterForm
-    additionalFields = {'Fachgebiet': '-----'}
+    additionalFields = {'Fachgebiet': stellenplanQuery.emptyFieldIndicator}
 
 
     def constructAccordion (self, request):
@@ -314,8 +320,8 @@ class qZusagen (stellenplanQuery):
 
     urlTarget = "qZusagen"
     queryFormClass = zusagenFilterForm
-    additionalFields = {'Wertigkeit': '-----',
-                        'Fachgebiet': '-----'}
+    additionalFields = {'Wertigkeit': stellenplanQuery.emptyFieldIndicator,
+                        'Fachgebiet': stellenplanQuery.emptyFieldIndicator}
     
 
     def constructAccordion (self, request):
@@ -358,7 +364,7 @@ class qZusagen (stellenplanQuery):
         qsZuordnung = standardfilters (Zuordnung.objects.all(),
                                        ['Fachgebiet'],
                                        self.ff.cleaned_data)
-        if not self.ff.cleaned_data['Wertigkeit'] == '-----':
+        if not self.fieldEmpty ('Wertigkeit'):
             qsZuordnung = qsZuordnung.filter (stelle__wertigkeit__exact =
                                               self.ff.cleaned_data['Wertigkeit'])
         tgZuordnungWertigkeit = TimelineGroups(qsZuordnung, 'stelle__wertigkeit')
