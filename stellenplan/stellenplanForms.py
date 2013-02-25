@@ -65,18 +65,18 @@ class BesetzungFilterForm (qForm):
 #################################
 
 class StellenFilterForm (qForm):
-    Wertigkeit = forms.fields.ChoiceField (choices=[('-----', '----')]
+    Wertigkeit = Select2ChoiceField (choices=[('-----', '----')]
                                            + sorted([(x.wertigkeit,x.wertigkeit)
                                               for x in Stellenwertigkeit.objects.all() ]),
                                             required=False)
-    Art =  forms.fields.ChoiceField (choices=[('-----', '----')]
+    Art =  Select2ChoiceField (choices=[('-----', '----')]
                                            + sorted([(x.stellenart,x.stellenart)
                                               for x in Stellenart.objects.all() ]),
                                             required=False)
 
 #################################
 class zuordnungenFilterForm (qForm):
-    Fachgebiet = forms.fields.ChoiceField (choices=[('-----', '----')]
+    Fachgebiet = Select2ChoiceField (choices=[('-----', '----')]
                                            + [(x,x) for x in Fachgebiet.objects.all() ],
         required=False)
 
@@ -84,10 +84,10 @@ class zuordnungenFilterForm (qForm):
 
     
 class zusagenFilterForm (qForm):
-    Fachgebiet = forms.fields.ChoiceField (choices=[('-----', '----')]
+    Fachgebiet = Select2ChoiceField (choices=[('-----', '----')]
                                            + [(x,x) for x in Fachgebiet.objects.all() ],
         required=False)
-    Wertigkeit = forms.fields.ChoiceField (choices=[('-----', '----')]
+    Wertigkeit = Select2ChoiceField (choices=[('-----', '----')]
                                                + [(x.wertigkeit,x.wertigkeit)
                                                for x in Stellenwertigkeit.objects.all() ],
         required=False)
