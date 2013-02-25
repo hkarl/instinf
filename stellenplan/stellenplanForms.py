@@ -21,7 +21,7 @@ class qForm (forms.Form):
         if (cleaned_data['Von'] and
             cleaned_data['Bis'] and
             cleaned_data['Von'] > cleaned_data['Bis']):
-            print "raising error"
+            # print "raising error"
             raise forms.ValidationError ("Das Von Datum muss vor dem Bis Datum liegen.")
         return cleaned_data 
 
@@ -102,13 +102,15 @@ class zusagenFilterForm (qForm):
     def clean(self):
         cleaned_data = super(zusagenFilterForm, self).clean()
         
-        print Fachgebiet, cleaned_data['Fachgebiet']
+        # print Fachgebiet, cleaned_data['Fachgebiet']
         if ((cleaned_data['Fachgebiet'] != '-----') and
             (cleaned_data['Wertigkeit'] == '-----')):
-            print "do something"
-            # get alle Wertigkeiten, die dieses Fachgebiet betreffen und bauen den WErtigkeitsbutton neu zusammen
-            wertig = Zusage.objects.all().filter (fachgebiet__exact=cleaned_data['Fachgebiet']).values('wertigkeit').distinct()
-            print wertig 
+            # get alle Wertigkeiten, die dieses Fachgebiet betreffen und
+            # bauen den WErtigkeitsbutton neu zusammen
+            
+            wertig = Zusage.objects.all().filter (fachgebiet__exact=
+                                                  cleaned_data['Fachgebiet']).values('wertigkeit').distinct()
+            # print wertig 
             self.fields['Wertigkeit'].choices  =  ([('-----', '----')]
                                                    + [(x['wertigkeit'],
             x['wertigkeit'])

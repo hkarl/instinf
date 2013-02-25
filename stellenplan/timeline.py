@@ -6,6 +6,7 @@ import tables
 import copy
 import datetime
 import re
+from pprint import pprint as pp 
 
 from accordion import Accordion
 
@@ -36,6 +37,13 @@ class Timeline:
     def dump (self):
         for d in sorted(self.m.keys()):
             print d, self.m[d]
+
+    def start (self):
+        return min (self.m.keys())
+    
+    def stop (self):
+        return max (self.m.keys())
+
 
     def aslist (self, cols={}):
         r = []
@@ -133,9 +141,9 @@ class TimelineGroups ():
         return tl
     
     def dump (self):
-        print "dumping a grouped timeline"
+        # print "dumping a grouped timeline"
         for k, v in self.tlg.iteritems():
-            print k
+            # print k
             v.dump()
 
     def asTable (self, request=None):
@@ -160,10 +168,37 @@ class TimelineGroups ():
                 for k,v in  self.tlg.iteritems()])
 
         res += '\\\\ \\bottomrule \n \\end{tabular}'
-        print res 
-        print "----"
+        # print res 
+        # print "----"
         return res
 
+
+    def asLatexGantt (self):
+        "timelinegroup als latex GRafik ist noch nicht implementiert!!"
+        res = r""""
+        \begin{ganttchart}{12}
+        [vgrid,hgrid,
+         x unit=0.371cm, y unit chart = 0.75cm,
+         title label font={\footnotesize},
+         bar height = 0.55,
+         bar top shift = 0.225,
+         inline,
+         milestone label font=\color{black}\small,
+         milestone label inline anchor={right=.1cm},
+        bar label inline anchor={anchor=west}, bar label font=\small,
+        link={-latex, rounded corners=1ex, thick}]
+        """
+
+        # find out how many quarters there are
+        print "asLatexGantt" 
+        pp([(k, v.stop() - v.start()) for k,v in self.tlg.iteritems()])
+        
+
+        res += r"""
+        \end{ganttchart}
+        """
+
+        return res 
     
     def asjGantt (self, tag):
         r = """
@@ -203,10 +238,9 @@ class TimelineGroups ():
         """
 
         # print r
-        return r 
+        return r
 
-    def asLatexGantt (self):
-        return "timelinegroup als latex GRafik ist noch nicht implementiert!!"
+
 
     def asAccordion (self, title, d, request):
         """

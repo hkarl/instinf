@@ -34,9 +34,10 @@ def standardfilters (qs, keywords, cleaned_data):
         qs = qs.exclude (von__gt = cleaned_data['Bis'])
 
     for k in keywords:
-        if not (cleaned_data[k] == '-----'):
+        if not ((cleaned_data[k] == '-----') or
+                (cleaned_data[k] == '')):
             filterstring = k.lower() + '__exact'
-            print filterstring 
+            # print filterstring 
             qs = qs.filter (**{filterstring: cleaned_data[k]})
 
     return qs 
@@ -73,6 +74,7 @@ class stellenplanQuery (View):
         preface = r"""
         \documentclass{article}
         \usepackage{booktabs}
+        \usepackage{pgfgantt}
         \begin{document}
         """
         body = ""
@@ -93,7 +95,9 @@ class stellenplanQuery (View):
         # run latex
         cwd = os.getcwd()
         os.chdir (workdir)
-        retval = subprocess.call (["pdflatex", '-interaction=nonstopmode', "report.tex"]) 
+        retval = subprocess.call (["pdflatex",
+                                   '-interaction=batchmode',
+                                   "report.tex"]) 
         os.chdir (cwd)
 
 
@@ -122,7 +126,7 @@ class stellenplanQuery (View):
             
         else:
             # empty request, neu aufbauen
-            print "empty request!" 
+            # print "empty request!" 
             self.ff = self.__class__.queryFormClass (request.GET)
             self.ff.cleaned_data = {'Von': None,
                                     'Bis': None,
@@ -175,7 +179,7 @@ class qBesetzung (stellenplanQuery):
         qs = standardfilters (allBesetzung, [], self.ff.cleaned_data)
 
 
-        print self.ff.cleaned_data
+        # print self.ff.cleaned_data
         
         # add a person filter, if that filter was selected
         if not self.fieldEmpty ('Person'): 
@@ -332,10 +336,16 @@ class qZusagen (stellenplanQuery):
 
     def constructAccordion (self, request):
 
-        # wie ueblich zunaechst eine Uberblick ueber Zusagen, gefiltert 
+        # wie ueblich zunaechst eine Uberblick ueber Zusagen, gefiltert
+
+        pp(self.ff.cleaned_data)
+        
         qs = standardfilters (Zusage.objects.all(),
                               ['Fachgebiet', 'Wertigkeit'],
                               self.ff.cleaned_data)
+
+        print qs
+        
         overviewtab = tables.ZusagenTable (qs)
         RequestConfig (request).configure(overviewtab)
 
@@ -343,6 +353,7 @@ class qZusagen (stellenplanQuery):
         a.addContent (overviewtab)
 
         self.renderDir['Accordion'].append(a)
+
 
         ########################################
 
