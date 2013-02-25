@@ -163,6 +163,7 @@ class qBesetzung (stellenplanQuery):
     urlTarget = 'qBesetzung'
     queryFormClass = BesetzungFilterForm 
     additionalFields = {'Person': stellenplanQuery.emptyFieldIndicator,
+                        'Stellennummer': stellenplanQuery.emptyFieldIndicator,
                         }
 
     def constructAccordion (self, request):
