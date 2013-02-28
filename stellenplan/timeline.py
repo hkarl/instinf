@@ -112,6 +112,15 @@ class Timeline:
                    min(max(self.m[kk[i]]/100, -10), 10)))
 
         return "[{" + "},\n{".join(v) + "}]"
+
+    def asHighchartValue (self):
+        v = []
+        for k in sorted(self.m.keys()):
+            # print k, type(k)
+            v.append ("[Date.UTC(%d, %d, %d), %d]" %
+                      (k.year, k.month, k.day, self.m[k]))
+            
+        return ",\n".join(v)
     
 class TimelineGroups ():
     """ Grouping a queryset along a given column, producing one timeline for each
@@ -188,10 +197,11 @@ class TimelineGroups ():
         bar label inline anchor={anchor=west}, bar label font=\small,
         link={-latex, rounded corners=1ex, thick}]
         """
+        
 
         # find out how many quarters there are
-        print "asLatexGantt" 
-        pp([(k, v.stop() - v.start()) for k,v in self.tlg.iteritems()])
+        # print "asLatexGantt" 
+        # pp([(k, v.stop() - v.start()) for k,v in self.tlg.iteritems()])
         
 
         res += r"""
@@ -199,6 +209,78 @@ class TimelineGroups ():
         """
 
         return res 
+
+
+
+    def asHighchart (self, tag):
+
+        print "-----\nHighchart" 
+        series = []
+        yaxis = []
+        top = 100
+        count = 0
+        height = 200
+        margin = 50 
+
+        for k,v in self.tlg.iteritems():
+
+            yaxis.append ("""
+                {
+                title: {text: '%s'},
+                height: %d,
+                top: %d,
+                offset: 30
+                }
+            """ % (k, height, top))
+
+            # Alternativer Versuch: 
+            # """ % (k, top))
+            top += height + margin 
+            
+            series.append("""            {
+              name: '%s',
+              type: 'line',
+              data: [ %s ],
+              yAxis: %d,
+              step: true 
+            }""" % (k, v.asHighchartValue(), count))
+
+            count += 1 
+        # print ",\n".join(series)
+
+        totalheight = top + 2*margin  
+
+        r = """
+        <script  type="text/javascript">
+       $(function() {
+		new Highcharts.StockChart({
+		    chart: {
+		        renderTo: '%s',
+                        height: %d
+		    },
+
+		    rangeSelector: {
+		        selected: 1
+		    },
+
+                    yAxis: [%s],
+
+		    title: {
+		        text: 'Zeitverlauf'
+		    },
+                    xAxis: {
+                        ordinal: false
+		    },		    
+		    series: [%s]
+                    });
+        });
+        </script>
+        """ % (tag, totalheight, 
+               ",\n".join(yaxis), ",\n".join(series))
+
+        print r 
+        return r 
+
     
     def asjGantt (self, tag):
         r = """
@@ -206,8 +288,7 @@ class TimelineGroups ():
         $(function() {
           "use strict";
           $(".%s").gantt({
-            source: [{
-        """ % tag
+            source: [{""" % tag
 
         rr = []
         # iterate over the individual timelines, gives one chart entry each
@@ -241,7 +322,6 @@ class TimelineGroups ():
         return r
 
 
-
     def asAccordion (self, title, d, request):
         """
         Turn this timeline group into an accordion entry with two tabs: table and gantt.
@@ -253,6 +333,7 @@ class TimelineGroups ():
 
         key = re.sub (r'[^a-zA-Z0-9]+', '', title)
         ac =  Accordion(title)
+        ac.addtab ("Graph", self.asHighchart(key+"-HS"))
         ac.addtab ("Tabelle", self.asTable(request), latex=self.asLatexTable())
         ac.addtab ("Gantt", self.asjGantt(key), latex=self.asLatexGantt())
         d['Accordion'].append(ac) 

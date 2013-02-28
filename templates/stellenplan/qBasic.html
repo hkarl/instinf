@@ -20,6 +20,20 @@
 <script type="text/javascript" src="{% static 'jquery/js/jquery-ui-1.10.0.custom.min.js'%}"></script>
 <script type="text/javascript" src="{% static 'jquery/development-bundle/ui/i18n/jquery.ui.datepicker-de.js'%}"></script>
 
+{# <script type="text/javascript" src="{% static 'highchart/highcharts.js'%}"></script> #}
+{# <script type="text/javascript" src="{% static 'highchart/highcharts-more.js'%}"></script> #}
+
+<script type="text/javascript"  src="{% static 'highchart/highstock.js'%}"></script>
+<script type="text/javascript"  src="{% static 'highchart/exporting.js'%}"></script>
+
+
+<!-- ##################### -->
+
+
+
+
+<!-- ##################### -->
+
 
 {% import_django_select2_js %}
 {% import_django_select2_css %}
@@ -77,6 +91,9 @@ buttonImageOnly: true});
      {% ifequal tabentry.t "Gantt" %}
          {{ tabentry.c|safe}}
      {% endifequal %} 
+     {% ifequal tabentry.t "Graph" %}
+         {{ tabentry.c|safe}}
+     {% endifequal %} 
   {% endfor %}
 {% endfor %}
 {% endif %} 
@@ -87,6 +104,8 @@ buttonImageOnly: true});
 
 
 {% block content %}
+
+
 
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
@@ -135,11 +154,13 @@ buttonImageOnly: true});
 	    {% ifequal refs.t "Tabelle" %}
 	      {% render_table refs.c %}
 	    {% else %}
-	      {% ifequal refs.t "Gantt" %}
-	         <div class="{{h.key}}"> </div>  
+	      {% if refs.t == "Gantt" %}
+	         <div class="{{h.key}}"> </div>
+	      {% elif refs.t == "Graph" %}
+		 <div id="{{h.key}}-HS" style="min-width: 600px; margin: 0 auto"></div>
 	      {% else %}
 	         {{ refs.c }} 
-	      {% endifequal %}
+	      {% endif %}
 	    {% endifequal %} 
 	  </div>
 	{% endfor %} 
