@@ -214,7 +214,7 @@ class TimelineGroups ():
 
     def asHighchart (self, tag):
 
-        print "-----\nHighchart" 
+        # print "-----\nHighchart" 
         series = []
         yaxis = []
         top = 100
@@ -278,7 +278,7 @@ class TimelineGroups ():
         """ % (tag, totalheight, 
                ",\n".join(yaxis), ",\n".join(series))
 
-        print r 
+        #  print r 
         return r 
 
     

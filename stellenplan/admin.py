@@ -1,5 +1,7 @@
+from django.db import models 
 from django.contrib import admin
 from stellenplan.models import Fachgebiet, Stellenart, Stellenwertigkeit, Stelle, Person, Zusage, Zuordnung, Besetzung
+from django_select2 import * 
 
 
 class FachgebietAdmin (admin.ModelAdmin):
@@ -24,6 +26,13 @@ class ZusageAdmin (admin.ModelAdmin):
     
 class ZuordnungAdmin (admin.ModelAdmin):
     list_display = ['fachgebiet', 'stelle', 'prozent', 'von', 'bis',]
+
+    # This is an attempt to put Select2ChoiceField into the admin interface for foreignkeys,
+    # but that does not work as suspected
+    # check: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.formfield_overrides 
+    ## formfield_overrides = {
+    ##     models.ForeignKey: {'widget': Select2ChoiceField },
+    ## }
     
 class BesetzungAdmin (admin.ModelAdmin):
     list_display = ['person', 'stelle', 'prozent', 'von', 'bis', 'pseudo']
