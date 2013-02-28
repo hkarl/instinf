@@ -14,11 +14,11 @@ class StellenwertigkeitAdmin (admin.ModelAdmin):
     list_display = ['wertigkeit', 'personalpunkte']
     
 class StelleAdmin (admin.ModelAdmin):
-    list_display = ['stellennummer', 'wertigkeit', 'art', 'von', 'bis', 'prozent']
+    list_display = ['stellennummer', 'wertigkeit', 'art', 'lehrkapazitaet', 'von', 'bis', 'prozent']
     
 class PersonAdmin (admin.ModelAdmin):
-    list_display = ['personalnummer', 'name', 'vorname', 'wertigkeit', 'von', 'bis', 'prozent']
-    search_fields = ['name']
+    list_display = ['personalnummer', 'name', 'vorname', 'wertigkeit', 'lehrverpflichtung', 'von', 'bis', 'prozent']
+    search_fields = ['personalnummer', 'name']
     
 class ZusageAdmin (admin.ModelAdmin):
     list_display = ['fachgebiet', 'wertigkeit', 'prozent', 'von', 'bis',]

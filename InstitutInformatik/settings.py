@@ -132,6 +132,7 @@ INSTALLED_APPS = (
     # for the djanog-tables2:
     'django_tables2',
     'django_select2', 
+    'django_evolution', 
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'stellenplan',

@@ -115,6 +115,13 @@ class Stelle (models.Model):
                                    decimal_places=0,
                                    help_text="Wieviel Prozent der VOLLEN Stelle?",
                                    )
+    lehrkapazitaet = models.DecimalField ("Lehrkapazität",
+                                             max_digits=5,
+                                             decimal_places=2,
+                                             help_text="Die mit dieser Stelle einhergehende Lehrkapazität, in SWS pro Semester",
+                                             blank=True,
+                                             )
+
     annmerkung = models.TextField ("Anmerkungen",
                              help_text="Beliebige Anmerkungen.",
                              blank=True,
@@ -158,6 +165,12 @@ class Person (models.Model):
                                    decimal_places=0,
                                    help_text="Wieviel Prozent der VOLLEN Arbeitszeit?",
                                    )
+    lehrverpflichtung = models.DecimalField ("Lehrverpflichtung",
+                                             max_digits=5,
+                                             decimal_places=2,
+                                             help_text="Persönliche Lehrverpflichtung in SWS pro Semester",
+                                             blank=True,
+                                             )
     annmerkung = models.TextField ("Anmerkungen",
                              help_text="Beliebige Anmerkungen.",
                              blank=True,
