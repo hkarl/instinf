@@ -15,13 +15,13 @@ class Fachgebiet(models.Model):
     kuerzel = models.CharField("Fachgebietskürzel",
                               max_length=10,
                               help_text="Ein Kürzel für das Fachgebiet, meist einige Buchstaben.",
-                              primary_key = True,
-                              unique = True,
+                              primary_key = False,
+                              unique = False,
                               )
     fgname = models.CharField ("Fachgebietsname",
                               max_length=50,
                               help_text="Der offizielle Name des Fachgebietes",
-                              unique=True,
+                              unique=False,
                               )
     von = models.DateField ("Einrichtungsdatum",
                       help_text="Wann wurde das Fachgebiet eingerichtet?")
@@ -50,7 +50,7 @@ class Stellenart (models.Model):
     stellenart = models.CharField("Stellenart",
                                   max_length=20,
                                   help_text="Welche Stellenarten unterscheiden wir?",
-                                  primary_key=True,
+                                  primary_key=False,
                                   unique=True,
                                   )
     annmerkung = models.TextField ("Anmerkungen",
@@ -71,7 +71,7 @@ class Stellenwertigkeit (models.Model):
     wertigkeit = models.CharField ("Wertigkeit",
                                    max_length=10,
                                    help_text = "Welche Wertigkeiten für Stellen existieren?",
-                                   primary_key=True,
+                                   primary_key=False,
                                    unique=True,
                                    )
     personalpunkte = models.DecimalField ("Personalpunkte",
@@ -96,8 +96,8 @@ class Stellenwertigkeit (models.Model):
 class Stelle (models.Model):
     stellennummer = models.DecimalField ("Stellennummer",
                                          help_text ="Eindeutige Stellennummer",
-                                         unique = True,
-                                         primary_key = True,
+                                         unique = False,
+                                         primary_key = False,
                                          max_digits=5,
                                          decimal_places=0,
                                          )
@@ -141,8 +141,8 @@ class Stelle (models.Model):
 class Person (models.Model):
     personalnummer = models.DecimalField ("Personalnummer",
                                           help_text = "Personalnummer der Person",
-                                          primary_key = True,
-                                          unique = True,
+                                          primary_key = False,
+                                          unique = False,
                                           max_digits=10,
                                           decimal_places=0,)
     name = models.CharField ("Nachname",
