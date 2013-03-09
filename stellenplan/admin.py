@@ -41,6 +41,7 @@ class StelleAdmin (SplitOnDateAdmin):
 class PersonAdmin (SplitOnDateAdmin):
     list_display = ['personalnummer', 'name', 'vorname', 'wertigkeit', 'lehrverpflichtung', 'von', 'bis', 'prozent']
     search_fields = ['personalnummer', 'name']
+    ordering = ['personalnummer', 'von']
 
 class ZusageAdmin (SplitOnDateAdmin):
     list_display = ['fachgebiet', 'wertigkeit', 'prozent', 'von', 'bis',]
