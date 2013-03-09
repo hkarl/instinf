@@ -1,6 +1,9 @@
 * Konsistenzprüfungen 
 
-- 
+- Überlappen sich Zeiträume für ein bestimmtes Objekt? Z.B. Personen o.ä.
+- Sind die Zeiträume von Objekten mit den vVerknü+opfungen konsistent? 
+- Wird eine Stelle mehrfach zugeordnet, zugesagt, oder besetzt? 
+- Was sind Zusagen oder Zuordnungen, die nicht durch sTellen hinterlegt sind? 
 
 
 * Übersichten 
