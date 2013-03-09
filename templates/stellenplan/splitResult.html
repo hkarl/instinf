@@ -1,0 +1,26 @@
+{% extends "admin/base_site.html" %}
+{% load staticfiles %}
+{% load url from future %}
+
+
+
+
+{% block content %}
+
+
+<h1> Resultat der Teilung </h1>
+
+Die Teilung ergab folgende Resultate:
+
+<ul>
+{% for r in result_list %}
+  <li> {{ r }} 
+{% endfor %}
+</ul>
+
+Sie sollten nun DRINGEND eine Konsistenzprüfung durchführen und ggf. weitere Anpassungen vornehmen! 
+
+
+{% endblock %}
+
+

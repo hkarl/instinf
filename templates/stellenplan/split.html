@@ -1,0 +1,52 @@
+{% extends "admin/base_site.html" %}
+{% load staticfiles %}
+{% load url from future %}
+
+
+{% block extrahead %}
+
+<link type="text/css" href="{% static 'jquery/css/ui-lightness/jquery-ui-1.10.0.custom.css'%}" rel="Stylesheet" />
+
+<link rel="stylesheet" href="{% static 'jgantt/css/style.css' %}" />
+<link rel="stylesheet" href="{% static 'jgantt/css/bootstrap.css' %}" />
+
+<script type="text/javascript" src="{% static 'jquery/js/jquery-1.9.0.js'%}"></script>
+<script type="text/javascript" src="{% static 'jquery/js/jquery-ui-1.10.0.custom.min.js'%}"></script>
+<script type="text/javascript" src="{% static 'jquery/development-bundle/ui/i18n/jquery.ui.datepicker-de.js'%}"></script>
+
+<script>
+$(function() {
+  $( "#id_Splitdatum" ).datepicker({
+showButtonPanel: true,
+changeMonth: true,
+changeYear: true,
+yearRange: "-5:+20", 
+showOn: "button",
+buttonImage: "{% static 'jquery/development-bundle/demos/images/calendar.gif' %}",
+buttonImageOnly: true});
+});
+</script>
+
+{% endblock %}
+
+
+{% block content %}
+
+
+<h1> Teile einen Datenbankeintrag </h1>
+
+Geben Sie das Datum ein, an dem der ausgewählte Eintrag geteilt werden soll (wird Enddatum des ersten Teils). 
+
+<form action = "{% url 'splitAction' params.what %}" method = "POST" >
+{% csrf_token %}
+<p><label for="id_Splitdatum">Trennungsdatum:</label> <input type="text" name="Splitdatum" id="id_Splitdatum" /></p>
+<input type="submit" value="Teile!" />
+<div style='display:none'>
+<input type"hidden" name="ids" value = {{ request.GET.ids }} >
+{# <input type"hidden" name="ct" value = {{ request.GET.ct }} > #} 
+</div>
+</form>
+
+{% endblock %}
+
+

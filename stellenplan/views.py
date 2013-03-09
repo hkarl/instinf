@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # from django.http import HttpResponse
+from django.http import HttpResponseNotFound 
 from django.conf import settings
 from django.views.generic import ListView, View
 from django.shortcuts import render
@@ -15,7 +16,11 @@ import accordion
 from django.views.decorators.http import require_http_methods
 from stellenplanForms import * 
 import os, codecs
-import subprocess 
+import subprocess
+import datetime 
+
+from copy import deepcopy 
+from django.contrib.contenttypes.models  import ContentType 
 
 
 from django.contrib.auth.decorators import login_required
@@ -42,6 +47,64 @@ def standardfilters (qs, keywords, cleaned_data):
 
     return qs 
 
+
+
+#########################################################
+
+
+class split (View):
+
+    @method_decorator (login_required)
+    def post (self, request, what):
+
+        renderDir = {'result_list': []}
+        print request.POST 
+        print "--- what ----" 
+        print what 
+
+        modelType = ContentType.objects.get(app_label="stellenplan", model = what)
+        print modelType
+        print type(modelType)
+
+        ids = request.POST['ids'].split(',')
+        splitdateStr = request.POST['Splitdatum']
+        splitdate = datetime.datetime.strptime (splitdateStr, '%d.%m.%Y').date()
+        print splitdateStr, splitdate
+        for oneid in ids:
+            entry = modelType.get_object_for_this_type (pk=oneid)
+            print entry, entry.von, entry.bis 
+            print type(entry)
+
+            if ((splitdate < entry.von) or
+                (splitdate > entry.bis)):
+                renderDir['result_list'].append ('Eintrag %s (%s - %s) konnte nicht geteilt werden: Trenndatum %s liegt ausserhalb.' % 
+                                                 (entry.__unicode__(), entry.von, entry.bis, splitdate))
+
+            else:
+                # lets do the split again
+                try:
+                    newentry = deepcopy(entry)
+                    newentry.id = None
+
+                    newentry.von = splitdate + datetime.timedelta(days=1) 
+                    newentry.save()
+
+                    entry.bis = splitdate
+                    entry.save()
+
+                    renderDir['result_list'].append ('Eintrag %s (%s - %s) wurde erfolgreich geteilt.' % 
+                                                 (entry.__unicode__(), entry.von, entry.bis))
+                except e:
+                    renderDir['result_list'].append ('Beim Versuch, Eintrag %s (%s - %s) zu teilen, trat folgender Fehler auf: %s. Bitte benachrichtigen Sie Ihren Adminstrator!' % 
+                                                 (entry.__unicode__(), entry.von, entry.bis, e.strerror))
+                    
+                
+        
+        return render (request,
+                       "stellenplan/splitResult.html",
+                       renderDir)
+    
+    
 
 
 #########################################################
