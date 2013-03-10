@@ -246,7 +246,7 @@ class konsistenz (View):
         ##     print b.stelle.wertigkeit.personalpunkte 
             
 
-        pp(wertigkeitNichtAusreichend)
+	#  pp(wertigkeitNichtAusreichend)
 
         ##############################
         
