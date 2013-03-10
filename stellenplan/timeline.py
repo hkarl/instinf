@@ -96,6 +96,14 @@ class Timeline:
         for i in range(0,len(datelist)-1):
             self.add(datelist[i], datelist[i+1], vorzeichen*tl.m[datelist[i]])
 
+    def aboveThreshold (self, thr):
+        """gib eine Liste von Zeitintervallen zurück, in der der Threshold überschreiten wurde"""
+        tmp = sorted(self.m.keys())
+        intervals = [(tmp[i], tmp[i+1]-datetime.timedelta(days=1), self.m[tmp[i]])
+                      for i in range (len(tmp)-1)
+                      if self.m[tmp[i]] > thr]
+        return intervals 
+
     def asjGanttValue (self):
         kk = sorted(self.m.keys())
         v = []

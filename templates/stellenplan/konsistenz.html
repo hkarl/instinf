@@ -1,5 +1,6 @@
 {% extends "admin/base_site.html" %}
-
+{% load admin_urls %}
+{% load url from future %}
 
 {% block content %}
 
@@ -10,35 +11,141 @@
 <h2> Überlappende Zeiträume  </h2>
 
 
-Noch nicht implementiert! 
+{% if overlap %}
+
+Überlap gefunden bei folgenden Einträgen: 
+<ul>
+{% for o in overlap %}
+<li>  Bei {{ o.module_name }} ({{ o.field }}) gibt es Überlappung:
+  <ul>
+    {% for oo in o.violationUrls %}
+    <li> <a href="http:{{ oo.0 }}" > {{ oo.2 }} </a> überlappt mit  <a href="http:{{ oo.1 }}" > {{ oo.3 }} </a> 
+    {% endfor %}
+  </ul>
+{% endfor %}
+  </ul>
+{% else %}
+Gute Nachricht: Keine Überlappungen gefunden.
+{% endif %}
+
+
 
 <h2> Konsistente Zeiträume bei Verknüpfungen </h2>
 
-Noch nicht implementiert! 
+
+{% if teilintervallkonflikte %}
+
+Konflikte gefunden bei folgenden Einträgen: 
+<ul>
+{% for o in teilintervallkonflikte %}
+<li>  Bei {{ o.0 }}  gibt es Konflikte mit {{ o.1 }} :
+  <ul>
+    {% for oo in o.2 %}
+    <li> {{o.0}}  <a href="http:{{ oo.0 }}" > {{ oo.2 }} </a> Konflikt {{o.1}} mit  <a href="http:{{ oo.1 }}" > {{ oo.3 }} </a> 
+    {% endfor %}
+  </ul>
+{% endfor %}
+  </ul>
+{% else %}
+Gute Nachricht: Keine Konflikte bei den Zeitintervallen der Verknüpfungen gefunden.
+{% endif %}
 
 
-<h2> Stelle mehrfach zugesagt </h2>
-
-Noch nicht implementiert! 
-
-<h2> Stelle mehrfach zugeordnet </h2> 
-
-Noch nicht implementiert! 
-
-<h2> Stelle mehrfach besetzt </h2>
 
 
-Noch nicht implementiert! 
-
-<h2> Zusage ohne Stelle </h2>
-
-Noch nicht implementiert! 
-
-<h2> Zuordnung ohne Stelle </h2>
-
-Noch nicht implementiert! 
+<h2> Stellezuordnung übersteigt Stellenkapazität </h2> 
 
 
+{% if zuordnungStelleKonflikt %}
+Bei folgenden Stellen wurden Konflikte in den Zuordnungen gefunden (in den jeweils angegebenen Zeitspannen):
+  <ul>
+  {% for st in zuordnungStelleKonflikt %}
+    <li> Stelle: <a href = "http:{{st.1}}"> {{st.0}} </a>
+    <br> In den Intervallen:
+    <ul>
+    {% for int in st.2 %}
+      <li> {{int.0}} - {{ int.1 }}  ({{int.2}} Prozent) mit den relevanten Zuordnungen:
+      {% for b in int.3 %}
+        <a href = "http:{{b.1}}" > {{b.0}} </a> , 
+      {% endfor %}
+    {% endfor %}
+    </ul>
+  {% endfor %}
+  </ul>
+{% else %} 
+ Gute Nachricht: Es wurden keine Zuordnungen gefunden, die die Kapazität der zugeordneten Stellen übersteigen.  
+{% endif %}
+
+  
+<h2> Stellenbesetzung übersteigt Stellenkapazität </h2>
+
+{% if besetzungStelleKonflikt %}
+Bei folgenden Stellen wurden Konflikte in den Besetzungen gefunden (in den jeweils angegebenen Zeitspannen):
+  <ul>
+  {% for st in besetzungStelleKonflikt %}
+    <li> Stelle: <a href = "http:{{st.1}}"> {{st.0}} </a>
+    <br> In den Intervallen:
+    <ul>
+    {% for int in st.2 %}
+      <li> {{int.0}} - {{ int.1 }}  ({{int.2}} Prozent) mit den relevanten Besetzungen:
+      {% for b in int.3 %}
+        <a href = "http:{{b.1}}" > {{b.0}} </a> , 
+      {% endfor %}
+    {% endfor %}
+    </ul>
+  {% endfor %}
+  </ul>
+{% else %} 
+ Gute Nachricht: Es wurden keine Besetzungen gefunden, die die Kapazität der besetzten Stellen übersteigen.  
+{% endif %}
+
+<h2> Person ohne Besetzung </h2>
+
+
+{% if personUnbesetzt %}
+  Es wurden bei folgenden Personen fehlende Besetzungen gefunden:
+  <ul>
+  {% for p in personUnbesetzt %}
+    <li>
+    <ul>
+      <li>
+    Personeneinträge: {% for pp in p.person %}
+     <a href ="http:{{ pp.url }}"> {{ pp.name }} </a> 
+    {% endfor %}
+      <li> 
+    Besetzungen: 
+    {% for b in p.besetzung %}
+     <a href ="http:{{ b.url }}"> {{ b.name }} </a> 
+    {% endfor %}
+      <li> Intervalle und Unterdeckung (in Prozent):
+      {% for i in p.intervalle %}
+      ({{i.0}}, {{i.1}}, {{i.2}}%)
+      {% endfor %}
+    </ul>
+  {% endfor %}
+  </ul>
+{% else %} 
+ Gute Nachricht: Es wurden keine Personen gefunden,die für die Dauer der Anstellung nicht auf eine konkrete Stelle besetzt sind.  
+{% endif %}
+  
+
+
+<h2> Stellenwertigkeit reicht für Besetzung nicht aus </h2>
+
+(nicht ausreichend: Stelle hat weniger Personalpunkte als die Person; Prozente spielen hier keine Rolle, nur nominell)
+
+{% if wertigkeitNichtAusreichend %}
+  Bei folgenden Besetzungen reicht die Wertigkeit der Stelle nicht aus, um die Wertigkeit des Vertrages der Person abzudecken:
+  <ul>
+  {% for b in wertigkeitNichtAusreichend %}
+    <li> <a href="http:{{b.url}}"> {{b.besetzung}} </a>
+  {% endfor %}
+  </ul>
+{% else %}
+  Gute Nachricht: Alle Personen sollten auf Stellen ausreichender Wertigkeit besetzt sein
+{% endif %}
+
+  
 {% endblock %}
 
 
