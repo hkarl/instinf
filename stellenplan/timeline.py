@@ -135,18 +135,28 @@ class TimelineGroups ():
     value in that column.
     Internal structure: a map, keys are the column values, values are timeline instances. """
 
-    def __init__ (self, qs=None, column=None):
+    def __init__ (self, qs=None, column=None, lableTable=None, lableField=None):
         self.tlg = {}
         if column:
             filterString = column + '__' + 'exact'
             ## print filterString 
             
             columnvalues = qs.values(column).distinct().all()
-            for c in columnvalues:
-                ## print 'g', g
+            print "column: ", column
+            print 'columnvalues: ', columnvalues
+
+            if lableTable:
+                columnLabels = [getattr(lableTable.objects.get(pk=c[column]), lableField) for c in columnvalues ]
+            else:
+                columnLabels = [c[column] for c in columnvalues]
+
+            print "columnLabel: ", columnLabels
+            
+            for c, l in zip(columnvalues, columnLabels):
+                print 'g, l', c, l
                 ## print 'dict', {filterString: g[column]}
                 qsColumned = qs.filter(**{filterString: c[column]})
-                self.tlg[c[column]] = self.TLfromQueryset (qsColumned)
+                self.tlg[l] = self.TLfromQueryset (qsColumned)
         else:
             if qs:
                 self.tlg[""] = self.TLfromQueryset(qs)
@@ -181,7 +191,9 @@ class TimelineGroups ():
 
         res = '\\begin{tabular}{ccc}\n \\toprule '
         res += 'Gruppierung & Datum & Prozent \\\\ \n \\midrule '
-        res += ' \\\\ \\midrule  \midrule \n'.join([ k + '\\\\  \\midrule\n' + v.aslatex({'Gruppe': k})
+
+        # print [(k,v) for k,v in self.tlg.iteritems()]
+        res += ' \\\\ \\midrule  \midrule \n'.join([ str(k) + '\\\\  \\midrule\n' + v.aslatex({'Gruppe': str(k)})
                 for k,v in  self.tlg.iteritems()])
 
         res += '\\\\ \\bottomrule \n \\end{tabular}'
@@ -258,6 +270,8 @@ class TimelineGroups ():
 
         totalheight = top + 2*margin  
 
+        # print yaxis 
+
         r = """
         <script  type="text/javascript">
        $(function() {
@@ -332,7 +346,7 @@ class TimelineGroups ():
 
     def asAccordion (self, title, d, request):
         """
-        Turn this timeline group into an accordion entry with two tabs: table and gantt.
+        Turn this timeline group into an accordion entry with three tabs: highchart, table and gantt.
         Add them to corresponding entires in the dictionary. 
         """
 

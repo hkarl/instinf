@@ -301,16 +301,15 @@ class qStellen (stellenplanQuery):
         ########################################
 
         # gefilterte Stellen nach Wertigkeit zusammenfassen
-        tgWertigkeit = TimelineGroups (qs,'wertigkeit')
+        tgWertigkeit = TimelineGroups (qs,'wertigkeit', Stellenwertigkeit, 'wertigkeit')
         tgWertigkeit.asAccordion ("Stellen nach Wertigkeit gruppiert",
                                   self.renderDir, request)
 
         #########
 
         # gefilterte Stellen nach Finanzierung zusammenfassen
-        TimelineGroups (qs,
-                        'art').asAccordion ("Stellen nach Finanzierung gruppiert",
-                                            self.renderDir, request)
+        TimelineGroups (qs,'art', Stellenart, 'stellenart').asAccordion ("Stellen nach Finanzierung gruppiert",
+                                                                         self.renderDir, request)
 
 
 
@@ -328,7 +327,7 @@ class qStellen (stellenplanQuery):
 
         zusageQs = standardfilters (Zusage.objects.all(),
                                     ['Wertigkeit'], self.ff.cleaned_data)
-        tgZusageWertigkeit = TimelineGroups (zusageQs, 'wertigkeit')
+        tgZusageWertigkeit = TimelineGroups (zusageQs, 'wertigkeit', Stellenwertigkeit, 'wertigkeit')
         tgWertigkeitOhneZusagen = tgWertigkeit.subtract(tgZusageWertigkeit)
 
         tgWertigkeitOhneZusagen.asAccordion ("Stellen nach Wertigkeit gruppiert, ZUSAGEN abgezogen",
@@ -343,12 +342,12 @@ class qStellen (stellenplanQuery):
         if not self.fieldEmpty('Wertigkeit'):
             qsZuordnung = qsZuordnung.filter (stelle__wertigkeit__exact =
                                               self.ff.cleaned_data['Wertigkeit'])
-        tgZuordnungWertigkeit = TimelineGroups(qsZuordnung, 'stelle__wertigkeit')
+        tgZuordnungWertigkeit = TimelineGroups(qsZuordnung, 'stelle__wertigkeit', Stellenwertigkeit, 'wertigkeit')
         
 
         tgWertigkeitOhneZuordnung = tgWertigkeit.subtract(tgZuordnungWertigkeit)
 
-        tgWertigkeitOhneZuordnung.asAccordion ("Stellen nach Wertigkeit gruppiert, ZURODNUNGEN abgezogen",
+        tgWertigkeitOhneZuordnung.asAccordion ("Stellen nach Wertigkeit gruppiert, ZUORDNUNGEN abgezogen",
                                              self.renderDir, request)
         
         
@@ -422,7 +421,7 @@ class qZusagen (stellenplanQuery):
 
 
         # Zusagen nach Wertigkeit gruppiert ausgeben
-        tgWertigkeit = TimelineGroups(qs, 'wertigkeit')
+        tgWertigkeit = TimelineGroups(qs, 'wertigkeit', Stellenwertigkeit, 'wertigkeit')
         tgWertigkeit.asAccordion ("Zusagen, nach Wertigkeit gruppiert",
                                   self.renderDir, request)
         
@@ -447,7 +446,7 @@ class qZusagen (stellenplanQuery):
         if not self.fieldEmpty ('Wertigkeit'):
             qsZuordnung = qsZuordnung.filter (stelle__wertigkeit__exact =
                                               self.ff.cleaned_data['Wertigkeit'])
-        tgZuordnungWertigkeit = TimelineGroups(qsZuordnung, 'stelle__wertigkeit')
+        tgZuordnungWertigkeit = TimelineGroups(qsZuordnung, 'stelle__wertigkeit', Stellenwertigkeit, 'wertigkeit')
         
         tgZusagenOhneZuordnung = tgWertigkeit.subtract(tgZuordnungWertigkeit)
         tgZusagenOhneZuordnung.asAccordion ("Offene Zusagen (Zuordnungen sind abgezogen), nach Wertigkeit gruppiert",
