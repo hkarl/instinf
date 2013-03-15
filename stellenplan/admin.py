@@ -6,6 +6,8 @@ from django_select2 import *
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponseRedirect
 
+import re
+
 ###################
 
 # base class that allows to split an entry
@@ -19,7 +21,8 @@ class SplitOnDateAdmin (admin.ModelAdmin):
         ## ct = ContentType.objects.get_for_model(queryset.model)
         ## print ct
         ## print type(ct)
-        return HttpResponseRedirect("/stellenplan/split/person/?ids=%s" % (",".join(selected)))
+        target= re.sub('Admin', '', self.__class__.__name__).lower()
+        return HttpResponseRedirect("/stellenplan/split/{0:s}/?ids={1:s}".format(target, ",".join(selected)))
 
     # splitPerson.short_description ("Teile den Datensatz einer Person an einem anzugebenden Datum")
     
