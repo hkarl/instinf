@@ -1,6 +1,6 @@
 from django.db import models 
 from django.contrib import admin
-from stellenplan.models import Fachgebiet, Stellenart, Stellenwertigkeit, Stelle, Person, Zusage, Zuordnung, Besetzung
+from stellenplan.models import Fachgebiet, Stellenart, Stellenwertigkeit, StellenwertigkeitIntervalle, Stelle, Person, Zusage, Zuordnung, Besetzung
 from django_select2 import * 
 
 from django.contrib.contenttypes.models import ContentType
@@ -17,7 +17,7 @@ class SplitOnDateAdmin (admin.ModelAdmin):
     
     def EintragTeilen (self, request, queryset):
         selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
-        ## print "---- cr ----" 
+        ## print "---- cr ----"
         ## ct = ContentType.objects.get_for_model(queryset.model)
         ## print ct
         ## print type(ct)
@@ -25,7 +25,8 @@ class SplitOnDateAdmin (admin.ModelAdmin):
         return HttpResponseRedirect("/stellenplan/split/{0:s}/?ids={1:s}".format(target, ",".join(selected)))
 
     # splitPerson.short_description ("Teile den Datensatz einer Person an einem anzugebenden Datum")
-    
+
+
 ###################
 
 
@@ -36,8 +37,12 @@ class StellenartAdmin (admin.ModelAdmin):
     list_display = ['stellenart']
     
 class StellenwertigkeitAdmin (admin.ModelAdmin):
-    list_display = ['wertigkeit', 'personalpunkte']
-    
+    list_display = ['wertigkeit']
+
+class StellenwertigkeitIntervalleAdmin (SplitOnDateAdmin):
+    list_display = ['wertigkeit', 'von', 'bis', 'personalpunkte']
+
+
 class StelleAdmin (SplitOnDateAdmin):
     list_display = ['stellennummer', 'wertigkeit', 'art', 'lehrkapazitaet', 'von', 'bis', 'prozent']
     
@@ -68,6 +73,7 @@ class BesetzungAdmin (SplitOnDateAdmin):
 admin.site.register (Fachgebiet, FachgebietAdmin)
 admin.site.register (Stellenart, StellenartAdmin)
 admin.site.register (Stellenwertigkeit, StellenwertigkeitAdmin)
+admin.site.register (StellenwertigkeitIntervalle, StellenwertigkeitIntervalleAdmin)
 admin.site.register (Stelle, StelleAdmin)
 admin.site.register (Person, PersonAdmin)
 admin.site.register (Zusage, ZusageAdmin)

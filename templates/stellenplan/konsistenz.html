@@ -132,13 +132,15 @@ Bei folgenden Stellen wurden Konflikte in den Besetzungen gefunden (in den jewei
 
 <h2> Stellenwertigkeit reicht für Besetzung nicht aus </h2>
 
-(nicht ausreichend: Stelle hat weniger Personalpunkte als die Person; Prozente spielen hier keine Rolle, nur nominell)
+{#(nicht ausreichend: Stelle hat weniger Personalpunkte als die Person; Prozente spielen hier keine Rolle, nur nominell)#}
 
-{% if wertigkeitNichtAusreichend %}
-  Bei folgenden Besetzungen reicht die Wertigkeit der Stelle nicht aus, um die Wertigkeit des Vertrages der Person abzudecken:
+{% if wertigkeitNichtPassend %}
+  Bei folgenden Besetzungen passt die Wertigkeit der Stelle nicht mit der Wertigkeit der Person zusammen (das ist nicht notwendig ein Problem):
   <ul>
-  {% for b in wertigkeitNichtAusreichend %}
+  {% for b in wertigkeitNichtPassend %}
     <li> <a href="http:{{b.url}}"> {{b.besetzung}} </a>
+      (Person: <a href="http:{{ b.person.url }}"> {{ b.person.text }} </a>,
+      Stelle: <a href="http:{{ b.stelle.url }}"> {{ b.stelle.text }} </a>)
   {% endfor %}
   </ul>
 {% else %}

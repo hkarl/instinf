@@ -234,12 +234,18 @@ class konsistenz (View):
         # Was heisst  "geringer", weniger Personalpunkte? 
 
         wertigkeitNichtAusreichend = [ {'besetzung':  b.__unicode__(),
+                                        'person': {'text': b.person.__unicode__(),
+                                                    'url': urlresolvers.reverse ('admin:stellenplan_person_change',
+                                                                                 args = (b.person.pk,))  },
+                                       'stelle': {'text': b.stelle.__unicode__(),
+                                                   'url': urlresolvers.reverse ('admin:stellenplan_stelle_change',
+                                                                                args = (b.stelle.pk,))  },
                                         'url': urlresolvers.reverse ('admin:stellenplan_besetzung_change',
                                                     args = (b.pk,))
                                         }
                                       for b in Besetzung.objects.all()
-                                      if (b.person.wertigkeit.personalpunkte >
-                                          b.stelle.wertigkeit.personalpunkte )]
+                                      if (b.person.wertigkeit !=
+                                          b.stelle.wertigkeit )]
         ## for b in Besetzung.objects.all():
         ##     print b
         ##     print b.person.wertigkeit.personalpunkte
@@ -257,6 +263,6 @@ class konsistenz (View):
                          'besetzungStelleKonflikt': besetzungStelleKonflikt, 
                          'zuordnungStelleKonflikt': zuordnungStelleKonflikt,
                          'personUnbesetzt': personUnbesetzt,
-                         'wertigkeitNichtAusreichend': wertigkeitNichtAusreichend, 
+                         'wertigkeitNichtPassend': wertigkeitNichtAusreichend,
                         })
     
