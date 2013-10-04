@@ -28,22 +28,30 @@ from django.utils.decorators import method_decorator
 
 def standardfilters (qs, keywords, cleaned_data):
     """Apply all the filter keywords to the queryset, take values from cleaned_data.
-    Von and Bis are always applied, nbo need to specify them in the keywords """
+    @param qs: a queryset.
+    @param keywords: a list of pairs of strings.
+        The first element of the pair is the keyword,
+        under which the value can be looked up in the cleaned_data map.
+        The second element is the filterstring to be used when filtering the queryset.
+        (Sadly, no automatic deduction of filterstring from keyword seems plausible)
+    @param cleaned_data: a map of key/values, as obtained from a form.
 
-    ## print "standardfilters: ", keywords
-    ## print pp(cleaned_data)
+    Note: Von and Bis are always applied, nbo need to specify them in the keywords
+    """
+
+    # print "standardfilters: ", keywords
+    # print pp(cleaned_data)
 
     if cleaned_data['Von']:
         qs = qs.exclude (bis__lt = cleaned_data['Von'])
     if cleaned_data['Bis']:
         qs = qs.exclude (von__gt = cleaned_data['Bis'])
 
-    for k in keywords:
-        if not ((cleaned_data[k] == '-----') or
-                (cleaned_data[k] == '')):
-            filterstring = k.lower() + '__exact'
-            # print filterstring 
-            qs = qs.filter (**{filterstring: cleaned_data[k]})
+    for (keyword, filterstring) in keywords:
+        if not ((cleaned_data[keyword] == '-----') or
+                (cleaned_data[keyword] == '')):
+            print keyword, filterstring, cleaned_data[keyword]
+            qs = qs.filter (**{filterstring: cleaned_data[keyword]})
 
     return qs 
 
@@ -238,7 +246,7 @@ class qBesetzung (stellenplanQuery):
         #  die Besetzungen wie üblich filtern: 
         allBesetzung = Besetzung.objects.all()
 
-        # alle Besetzungen nach Standardfilter 
+        # alle Besetzungen nach Standardfilter - TODO: check ob filter gebraucht wird
         qs = standardfilters (allBesetzung, [], self.ff.cleaned_data)
 
 
@@ -286,10 +294,21 @@ class qStellen (stellenplanQuery):
         #  die Stellen wie üblich filtern: 
         allStellen = Stelle.objects.all()
 
-        # alle Besetzungen nach Standardfilter 
+        # alle Stellen nach Standardfilter
+
+        # Beispiele fuer queries; Komplikation: wir gehen durch foreign keys
+        # qs = allStellen.filter(wertigkeit__wertigkeit__exact='E13')
+        # qs = allStellen.filter(art__stellenart__exact='Drittmittel')
+        # print qs
+
         qs = standardfilters (allStellen,
-                              ['Wertigkeit', 'Art'],
+                              [('Wertigkeit', 'wertigkeit__wertigkeit__exact'),
+                               ('Art', 'art__stellenart__exact')],
                               self.ff.cleaned_data)
+
+        print "stellen nach Filter: "
+        print qs
+
         stellentab = tables.StellenTable (qs) 
         RequestConfig (request).configure(stellentab)
 
@@ -326,7 +345,8 @@ class qStellen (stellenplanQuery):
 
 
         zusageQs = standardfilters (Zusage.objects.all(),
-                                    ['Wertigkeit'], self.ff.cleaned_data)
+                                    [('Wertigkeit', 'wertigkeit__wertigkeit__exact'),],
+                                    self.ff.cleaned_data)
         tgZusageWertigkeit = TimelineGroups (zusageQs, 'wertigkeit', Stellenwertigkeit, 'wertigkeit')
         tgWertigkeitOhneZusagen = tgWertigkeit.subtract(tgZusageWertigkeit)
 
@@ -337,10 +357,11 @@ class qStellen (stellenplanQuery):
         # und noch mal fast das gleiche, nur jetzt die ZUORDNUNGEN abziehen, 
 
         qsZuordnung = standardfilters (Zuordnung.objects.all(),
-                                    [], self.ff.cleaned_data)
+                                        [],
+                                       self.ff.cleaned_data)
         
         if not self.fieldEmpty('Wertigkeit'):
-            qsZuordnung = qsZuordnung.filter (stelle__wertigkeit__exact =
+            qsZuordnung = qsZuordnung.filter (stelle__wertigkeit__wertigkeit__exact =
                                               self.ff.cleaned_data['Wertigkeit'])
         tgZuordnungWertigkeit = TimelineGroups(qsZuordnung, 'stelle__wertigkeit', Stellenwertigkeit, 'wertigkeit')
         
@@ -367,7 +388,7 @@ class qZuordnungen (stellenplanQuery):
 
         # wie ueblich zunaechst eine Uberblick ueber Zusagen, gefiltert 
         qs = standardfilters (Zuordnung.objects.all(),
-                              ['Fachgebiet'],
+                              [('Fachgebiet', 'fachgebiet__kuerzel__exact'), ],
                               self.ff.cleaned_data)
         overviewtab = tables.ZusagenTable (qs)
         RequestConfig (request).configure(overviewtab)
@@ -403,7 +424,8 @@ class qZusagen (stellenplanQuery):
         pp(self.ff.cleaned_data)
         
         qs = standardfilters (Zusage.objects.all(),
-                              ['Fachgebiet', 'Wertigkeit'],
+                              [('Fachgebiet', 'fachgebiet__kuerzel__exact'),
+                               ('Wertigkeit', 'wertigkeit__wertigkeit__exact'),],
                               self.ff.cleaned_data)
 
         print qs
@@ -441,10 +463,10 @@ class qZusagen (stellenplanQuery):
         # gruppierten ZuORDNUNGEN abziehen
 
         qsZuordnung = standardfilters (Zuordnung.objects.all(),
-                                       ['Fachgebiet'],
+                                       [('Fachgebiet', 'fachgebiet__kuerzel__exact'),],
                                        self.ff.cleaned_data)
         if not self.fieldEmpty ('Wertigkeit'):
-            qsZuordnung = qsZuordnung.filter (stelle__wertigkeit__exact =
+            qsZuordnung = qsZuordnung.filter (stelle__wertigkeit__wertigkeit__exact =
                                               self.ff.cleaned_data['Wertigkeit'])
         tgZuordnungWertigkeit = TimelineGroups(qsZuordnung, 'stelle__wertigkeit', Stellenwertigkeit, 'wertigkeit')
         

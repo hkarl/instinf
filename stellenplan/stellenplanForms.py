@@ -108,7 +108,7 @@ class zusagenFilterForm (qForm):
             # get alle Wertigkeiten, die dieses Fachgebiet betreffen und
             # bauen den WErtigkeitsbutton neu zusammen
             
-            wertig = Zusage.objects.all().filter (fachgebiet__exact=
+            wertig = Zusage.objects.all().filter (fachgebiet__kuerzel__exact=
                                                   cleaned_data['Fachgebiet']).values('wertigkeit').distinct()
             # print wertig 
             self.fields['Wertigkeit'].choices  =  ([('-----', '----')]

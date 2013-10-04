@@ -48,6 +48,7 @@ class konsistenz (View):
         overlapchecks = [ (Person, 'personalnummer'),
                           (Fachgebiet, 'kuerzel'),
                           (Stelle, 'stellennummer'),
+                          (StellenwertigkeitIntervalle, 'wertigkeit'),
                           (Zuordnung, 'stelle'), 
                           (Besetzung, 'stelle'), 
                         ]
@@ -96,10 +97,11 @@ class konsistenz (View):
                   [ ( urlresolvers.reverse ('admin:stellenplan_' +
                                             tib[0].__name__.lower() + '_change',
                                             args = (entry.pk,)),
-                       urlresolvers.reverse ('admin:stellenplan_' +
+                      urlresolvers.reverse ('admin:stellenplan_' +
                                              getattr (entry, tib[1]).__class__.__name__.lower() + '_change',
-                                             args = (getattr (entry, tib[1]).pk,)),                                                        entry.__unicode__(),
-                       getattr (entry, tib[1]).__unicode__()
+                                             args = (getattr (entry, tib[1]).pk,)),
+                      entry.__unicode__(),
+                      getattr (entry, tib[1]).__unicode__()
                       )
                       for entry in tib[0].objects.all()
                       if not (( entry.von >= getattr (entry, tib[1]).von ) and
