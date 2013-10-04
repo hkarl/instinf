@@ -1,0 +1,118 @@
+- fields: {annmerkung: '', bis: 2008-01-01, fgname: Rechnernetze, kostenstelle: '111',
+    kuerzel: CN, lastmodified: 2013-03-10, von: 2000-01-01}
+  model: stellenplan.fachgebiet
+  pk: 1
+- fields: {annmerkung: '', bis: 2008-01-01, fgname: Testgebiet, kostenstelle: '123',
+    kuerzel: XY, lastmodified: 2013-03-10, von: 2005-01-01}
+  model: stellenplan.fachgebiet
+  pk: 2
+- fields: {annmerkung: In der Berufungsordnung zugesagte Stelle, lastmodified: 2013-03-07,
+    stellenart: Landesstelle}
+  model: stellenplan.stellenart
+  pk: 1
+- fields: {annmerkung: 'Drittmittelfinanzierte Stelle: DFG, Stiftung etc.', lastmodified: 2013-03-07,
+    stellenart: Drittmittel}
+  model: stellenplan.stellenart
+  pk: 2
+- fields: {annmerkung: GHR, lastmodified: 2013-03-07, stellenart: "Pr\xE4sidiumsmittel"}
+  model: stellenplan.stellenart
+  pk: 3
+- fields: {annmerkung: '', lastmodified: 2013-03-07, wertigkeit: E8}
+  model: stellenplan.stellenwertigkeit
+  pk: 1
+- fields: {annmerkung: '', lastmodified: 2013-03-07, wertigkeit: E11}
+  model: stellenplan.stellenwertigkeit
+  pk: 2
+- fields: {annmerkung: '', lastmodified: 2013-03-07, wertigkeit: E13}
+  model: stellenplan.stellenwertigkeit
+  pk: 3
+- fields: {annmerkung: '', lastmodified: 2013-03-07, wertigkeit: W1}
+  model: stellenplan.stellenwertigkeit
+  pk: 4
+- fields: {annmerkung: '', lastmodified: 2013-03-07, wertigkeit: W2}
+  model: stellenplan.stellenwertigkeit
+  pk: 5
+- fields: {annmerkung: '', lastmodified: 2013-03-07, wertigkeit: W3}
+  model: stellenplan.stellenwertigkeit
+  pk: 6
+- fields: {annmerkung: '', lastmodified: 2013-03-07, wertigkeit: E5}
+  model: stellenplan.stellenwertigkeit
+  pk: 7
+- fields: {annmerkung: '', lastmodified: 2013-03-07, wertigkeit: E6}
+  model: stellenplan.stellenwertigkeit
+  pk: 8
+- fields: {annmerkung: '', bis: 9999-12-31, lastmodified: 2013-03-15, personalpunkte: '12',
+    von: 2013-03-15, wertigkeit: 1}
+  model: stellenplan.stellenwertigkeitintervalle
+  pk: 1
+- fields: {annmerkung: '', art: 1, bis: 2030-01-01, lastmodified: 2013-03-09, lehrkapazitaet: '9',
+    prozent: '100', stellennummer: '11', von: 2005-01-01, wertigkeit: 6}
+  model: stellenplan.stelle
+  pk: 1
+- fields: {annmerkung: '', art: 1, bis: 2010-01-01, lastmodified: 2013-03-10, lehrkapazitaet: '4',
+    prozent: '100', stellennummer: '12', von: 2000-01-01, wertigkeit: 3}
+  model: stellenplan.stelle
+  pk: 2
+- fields: {annmerkung: '', art: 2, bis: 2099-01-01, lastmodified: 2013-03-10, lehrkapazitaet: '0',
+    prozent: '50', stellennummer: '13', von: 2013-03-10, wertigkeit: 7}
+  model: stellenplan.stelle
+  pk: 3
+- fields: {annmerkung: '', bis: 2013-03-31, lastmodified: 2013-03-15, lehrverpflichtung: '0',
+    name: Lange, personalnummer: '890', prozent: '100', von: 2012-04-01, vorname: Christina,
+    wertigkeit: E8}
+  model: stellenplan.person
+  pk: 1
+- fields: {annmerkung: ab dem 01.03.14 Zuordnung zu Prof. Platzner, bis: 2028-12-01,
+    lastmodified: 2013-03-07, lehrverpflichtung: '0', name: Gundelach, personalnummer: '1009',
+    prozent: '75', von: 2000-01-01, vorname: Sigrid, wertigkeit: E6}
+  model: stellenplan.person
+  pk: 2
+- fields: {annmerkung: ab dem 01.03.14 Zuordnung Prof. Platzner, bis: 2013-03-25,
+    lastmodified: 2013-03-09, lehrverpflichtung: '0', name: Schultz-Friese, personalnummer: '865',
+    prozent: '100', von: 2000-01-01, vorname: Tobias, wertigkeit: E11}
+  model: stellenplan.person
+  pk: 4
+- fields: {annmerkung: ab dem 01.03.14 Zuordnung Prof. Platzner, bis: 2016-03-26,
+    lastmodified: 2013-03-09, lehrverpflichtung: '0', name: Schultz-Friese, personalnummer: '865',
+    prozent: '100', von: 2013-03-24, vorname: Tobias, wertigkeit: E11}
+  model: stellenplan.person
+  pk: 5
+- fields: {annmerkung: ab dem 01.03.14 Zuordnung Prof. Platzner, bis: 2040-10-01,
+    lastmodified: 2013-03-09, lehrverpflichtung: '0', name: Schultz-Friese, personalnummer: '865',
+    prozent: '100', von: 2016-03-27, vorname: Tobias, wertigkeit: E11}
+  model: stellenplan.person
+  pk: 6
+- fields: {annmerkung: '', bis: 2020-12-31, lastmodified: 2013-03-09, lehrverpflichtung: '9',
+    name: Karl, personalnummer: '111', prozent: '100', von: 2004-10-01, vorname: Holger,
+    wertigkeit: W3}
+  model: stellenplan.person
+  pk: 7
+- fields: {annmerkung: '', bis: 2047-12-01, lastmodified: 2013-03-15, lehrverpflichtung: '0',
+    name: Lange, personalnummer: '890', prozent: '100', von: 2013-04-01, vorname: Christina,
+    wertigkeit: E8}
+  model: stellenplan.person
+  pk: 8
+- fields: {annmerkung: '', bis: 2015-12-31, fachgebiet: 2, lastmodified: 2013-03-11,
+    prozent: '80', von: 2013-03-11, wertigkeit: 5}
+  model: stellenplan.zusage
+  pk: 1
+- fields: {annmerkung: '', bis: 2012-01-01, fachgebiet: 1, lastmodified: 2013-03-10,
+    prozent: '100', stelle: 2, von: 2000-01-01}
+  model: stellenplan.zuordnung
+  pk: 1
+- fields: {annmerkung: '', bis: 2006-01-01, fachgebiet: 2, lastmodified: 2013-03-10,
+    prozent: '50', stelle: 2, von: 2005-01-01}
+  model: stellenplan.zuordnung
+  pk: 2
+- fields: {annmerkung: '', bis: 2018-12-31, lastmodified: 2013-03-09, person: 7, prozent: '100',
+    pseudo: false, stelle: 1, von: 2000-01-01}
+  model: stellenplan.besetzung
+  pk: 1
+- fields: {annmerkung: '', bis: 2013-03-13, lastmodified: 2013-03-09, person: 1, prozent: '20',
+    pseudo: false, stelle: 1, von: 2013-03-09}
+  model: stellenplan.besetzung
+  pk: 2
+- fields: {annmerkung: '', bis: 2013-12-31, lastmodified: 2013-03-10, person: 2, prozent: '20',
+    pseudo: false, stelle: 3, von: 2013-03-10}
+  model: stellenplan.besetzung
+  pk: 3
