@@ -1,6 +1,7 @@
 from django.db import models 
 from django.contrib import admin
-from stellenplan.models import Fachgebiet, Stellenart, Stellenwertigkeit, StellenwertigkeitIntervalle, Stelle, Person, Zusage, Zuordnung, Besetzung
+from stellenplan.models import Fachgebiet, Stellenart, Stellenwertigkeit, StellenwertigkeitIntervalle, Stelle, Person\
+    , Zusage, Zuordnung, Besetzung, PersonZusage
 from django_select2 import * 
 
 from django.contrib.contenttypes.models import ContentType
@@ -47,9 +48,15 @@ class StelleAdmin (SplitOnDateAdmin):
     list_display = ['stellennummer', 'wertigkeit', 'art', 'lehrkapazitaet', 'von', 'bis', 'prozent']
     
 class PersonAdmin (SplitOnDateAdmin):
-    list_display = ['personalnummer', 'name', 'vorname', 'wertigkeit', 'lehrverpflichtung', 'von', 'bis', 'prozent']
+    list_display = ['personalnummer', 'name', 'vorname']
     search_fields = ['personalnummer', 'name']
-    ordering = ['personalnummer', 'von']
+    ordering = ['personalnummer', 'name']
+
+class PersonZusageAdmin (SplitOnDateAdmin):
+    list_display = ['person', 'wertigkeit', 'lehrverpflichtung', 'von', 'bis', 'prozent']
+    search_fields = ['person']
+    ordering = ['person', 'von']
+
 
 class ZusageAdmin (SplitOnDateAdmin):
     list_display = ['fachgebiet', 'wertigkeit', 'prozent', 'von', 'bis',]
@@ -76,6 +83,7 @@ admin.site.register (Stellenwertigkeit, StellenwertigkeitAdmin)
 admin.site.register (StellenwertigkeitIntervalle, StellenwertigkeitIntervalleAdmin)
 admin.site.register (Stelle, StelleAdmin)
 admin.site.register (Person, PersonAdmin)
+admin.site.register (PersonZusage, PersonZusageAdmin)
 admin.site.register (Zusage, ZusageAdmin)
 admin.site.register (Zuordnung, ZuordnungAdmin)
 admin.site.register (Besetzung, BesetzungAdmin)

@@ -1,4 +1,13 @@
 # -*- coding: utf-8 -*-
+
+"""
+Stellenplan models: Persons, Groups, Contracts
+
+* :class:`Fachgebiet`: A research group
+* :class:`Stellenart`: Which types of Stellen exist? 
+"""
+
+
 from django.db import models
 
 
@@ -48,6 +57,10 @@ class Fachgebiet(models.Model):
 
 
 class Stellenart(models.Model):
+    """Which types of Stellen exist?
+
+    We assume that these do not change, but additional ones might appear in the future.
+    """
     stellenart = models.CharField("Stellenart",
                                   max_length=20,
                                   help_text="Welche Stellenarten unterscheiden wir?",
@@ -187,6 +200,32 @@ class Person(models.Model):
                                help_text="Vorname",
                                max_length=50,
     )
+
+    annmerkung = models.TextField("Anmerkungen",
+                                  help_text="Beliebige Anmerkungen.",
+                                  blank=True,
+    )
+    lastmodified = models.DateField("Letzte Änderung",
+                                    help_text="Wann wurde die letzte Änderung vorgenommen? Wird automatisch gesetzt.",
+                                    auto_now=True)
+    def __unicode__(self):
+        return self.name + ", " + self.vorname + " (" + unicode(self.personalnummer) + ")"
+
+
+class PersonZusage(models.Model):
+    """Zusage an eine Person
+
+    Einer PERSON koennen im Laufe der Zeit unterschiedliche Arten von STellen zugesagt werden.
+    Diese Zusage heißt nicht automatisch, dass dies auch erfüllt wird. Diese Klasse
+    hält diese Zusagen an eine einzelne Person (nicht an eine Arbeitsgruppe fest).
+    Diese PersonZusage ist mit Besetzung zu vergleichen. 
+    """
+
+    person = models.ForeignKey('Person',
+                               help_text="Wem wurde diese Zusage gemacht?",
+                               # to_field="Person"
+                               )
+
     wertigkeit = models.ForeignKey('Stellenwertigkeit',
                                    help_text="Welche Wertigkeit hat der Vertrag?",
                                    to_field="wertigkeit")
@@ -212,9 +251,6 @@ class Person(models.Model):
     lastmodified = models.DateField("Letzte Änderung",
                                     help_text="Wann wurde die letzte Änderung vorgenommen? Wird automatisch gesetzt.",
                                     auto_now=True)
-
-    def __unicode__(self):
-        return self.name + ", " + self.vorname + " (" + unicode(self.personalnummer) + ")"
 
 ##########################################
 

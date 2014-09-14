@@ -7,6 +7,7 @@ import os
 APPLICATION_DIR = os.path.dirname( globals()[ '__file__' ] )
 # print APPLICATION_DIR
 
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -129,10 +130,12 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
+    # extensions to manage:
+    'django_extensions', 
     # for the djanog-tables2:
     'django_tables2',
     'django_select2', 
-    'django_evolution', 
+    # 'django_evolution', 
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'stellenplan',
