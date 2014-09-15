@@ -105,14 +105,12 @@ class split (View):
                 except e:
                     renderDir['result_list'].append ('Beim Versuch, Eintrag %s (%s - %s) zu teilen, trat folgender Fehler auf: %s. Bitte benachrichtigen Sie Ihren Adminstrator!' % 
                                                  (entry.__unicode__(), entry.von, entry.bis, e.strerror))
-                    
-                
-        
+
+
+
         return render (request,
                        "stellenplan/splitResult.html",
                        renderDir)
-    
-    
 
 
 #########################################################
@@ -127,7 +125,7 @@ class stellenplanQuery (View):
     urlTarget = ''
     queryFormClass = qForm
     emptyFieldIndicator = '-----'
-        
+
     def constructAccordion (self, request):
         """
         construct the renderDir dictionary, containting the filter results in
@@ -141,7 +139,7 @@ class stellenplanQuery (View):
 
         workdir = settings.STATICFILES_DIRS[0]
         fp = os.path.join(settings.STATICFILES_DIRS[0], 'report.tex')
-        
+
         preface = r"""
         \documentclass{article}
         \usepackage{booktabs}
@@ -175,7 +173,7 @@ class stellenplanQuery (View):
     def fieldEmpty (self, f):
         return ((self.ff.cleaned_data[f] == stellenplanQuery.emptyFieldIndicator) or
                 (self.ff.cleaned_data[f] == ''))
-        
+
     @method_decorator(login_required)
     def get(self, request):
         # print request 
@@ -194,7 +192,7 @@ class stellenplanQuery (View):
                                'form': self.ff,
                                'urlTarget': self.__class__.urlTarget,                           
                                    })
-            
+
         else:
             # empty request, neu aufbauen
             # print "empty request!" 
@@ -227,12 +225,10 @@ class stellenplanQuery (View):
                        "stellenplan/" + self.__class__.urlTarget + ".html",
                        self.renderDir)
 
-        
-
 
 #################################
 
-    
+
 class qBesetzung (stellenplanQuery):
     """This is just an empty class"""
     urlTarget = 'qBesetzung'
