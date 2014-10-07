@@ -221,7 +221,6 @@ class Stelle(models.Model):
         decimal_places=2,
         help_text="Die mit dieser Stelle einhergehende Lehrkapazität, "
         "in SWS pro Semester",
-        blank=True,
         )
 
     annmerkung = models.TextField("Anmerkungen",
@@ -326,8 +325,6 @@ class PersonZusage(models.Model):
         max_digits=5,
         decimal_places=2,
         help_text="Persönliche Lehrverpflichtung in SWS pro Semester",
-        default=0,
-        blank=True,
         )
     annmerkung = models.TextField("Anmerkungen",
                                   help_text="Beliebige Anmerkungen.",
