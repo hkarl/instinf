@@ -38,7 +38,7 @@ class Fachgebiet(models.Model):
     date for a limited contract. Kostenstelle desribes the
     Restemittel-Konto.
     """
-    
+
     kuerzel = models.CharField("Fachgebietskürzel",
                                max_length=10,
                                help_text="Ein Kürzel für das Fachgebiet,"
@@ -59,7 +59,6 @@ class Fachgebiet(models.Model):
         "Abrechnungsobjekt",
         max_digits=10,
         decimal_places=0,
-        blank=True,
         help_text="Abrechnungsobjekt des Fachgebiets")
     annmerkung = models.TextField("Anmerkungen",
                                   help_text="Beliebige Anmerkungen.",
