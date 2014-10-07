@@ -326,6 +326,7 @@ class PersonZusage(models.Model):
         max_digits=5,
         decimal_places=2,
         help_text="Persönliche Lehrverpflichtung in SWS pro Semester",
+        default=0,
         blank=True,
         )
     annmerkung = models.TextField("Anmerkungen",
