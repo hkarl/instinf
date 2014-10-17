@@ -477,7 +477,8 @@ class Besetzung(models.Model):
         auto_now=True)
 
     def __unicode__(self):
-        return self.person.name + "@" + unicode(self.stelle.stellennummer)
+        return (self.person.name + "@" + unicode(self.stelle.stellennummer) +
+                " (" +  str(self.von) + " - " + str(self.bis) + " )")
 
     class Meta:
         verbose_name_plural = "Besetzungen"

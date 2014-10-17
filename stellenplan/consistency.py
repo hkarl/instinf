@@ -39,13 +39,13 @@ class konsistenz (View):
                                     ))
 
         return violationList 
-        
+
     @method_decorator (login_required)
     def get (self, request):
 
         ##############################
         # check overlaps of intervals, uniqueness identified via the column : 
-        overlapchecks = [ (Person, 'personalnummer'),
+        overlapchecks = [ (PersonZusage, 'person'),
                           (Fachgebiet, 'kuerzel'),
                           (Stelle, 'stellennummer'),
                           (StellenwertigkeitIntervalle, 'wertigkeit'),
@@ -61,14 +61,13 @@ class konsistenz (View):
                 qs = o[0].objects.filter (**{ o[1] + '__exact':   k[o[1]]})
                 violationList= self.check_overlap (qs, o[1])
 
-                
+
                 if violationList:
 
                     violationURLs =  [ (urlresolvers.reverse ('admin:stellenplan_' +
                                                               o[0].__name__.lower()  + '_change', args=(v[0],)),
                                         urlresolvers.reverse ('admin:stellenplan_' +
                                                               o[0].__name__.lower()  + '_change', args=(v[1],)),
-                                                              
                                         qs.get(id=v[0]).__unicode__(),
                                         qs.get(id=v[1]).__unicode__(),
                                         )
@@ -87,14 +86,14 @@ class konsistenz (View):
         teilintervallbeziehungen = [(Zusage, "fachgebiet"),
                                     (Zuordnung, "fachgebiet"),
                                     (Zuordnung, "stelle"),
-                                    (Besetzung, "person"),
+                                    # (Besetzung, "person"),
                                     (Besetzung, "stelle"),
                                     ]
-        
-                
+
+
         teilintervallkonflikte =  filter (lambda x: x[2],
-                       [(tib[0].__name__, tib[1].capitalize(),
-                  [ ( urlresolvers.reverse ('admin:stellenplan_' +
+                        [(tib[0].__name__, tib[1].capitalize(),
+                    [ ( urlresolvers.reverse ('admin:stellenplan_' +
                                             tib[0].__name__.lower() + '_change',
                                             args = (entry.pk,)),
                       urlresolvers.reverse ('admin:stellenplan_' +
@@ -128,7 +127,7 @@ class konsistenz (View):
 
             ## print "----" 
             ## print "Stelle: ", stelle
-            
+
             tlBesetzung = Timeline()
             besetzungenDieserStelle = stelle.besetzung_set.all()
             for bes in besetzungenDieserStelle: 
@@ -190,16 +189,16 @@ class konsistenz (View):
 
         # welche Personen wurden noch nicht besetzt, sind also nicht finanziert?
         # gruppiere Personen nach Personalnummer, bilde jeweils eine Timeline, und ziehe davon die Besetzungstimeline ab, die für diese Personalnummer entsteht
-                
+
         personUnbesetzt = []
-        
+
         for pGrouped in Person.objects.values('personalnummer').distinct().all():
             # print pGrouped
 
             pTl = Timeline ()
             bTl = Timeline ()
-            
-            for p in Person.objects.all().filter(personalnummer__exact = pGrouped['personalnummer']):
+
+            for p in PersonZusage.objects.all().filter(person__personalnummer__exact = pGrouped['personalnummer']):
                 #  print p
                 pTl.add (p.von, p.bis, p.prozent)
 
@@ -208,7 +207,7 @@ class konsistenz (View):
                 bTl.add (b.von, b.bis, b.prozent)
 
             pTl.addTL (bTl, -1)
-            
+
             fehlendeBesetzung = pTl.aboveThreshold(0)
 
             if fehlendeBesetzung:
@@ -233,31 +232,29 @@ class konsistenz (View):
         ##############################
 
         # Wurden Personen auf Stellen besetzt, die eine geringere Wertigkeit hat als die Person?
-        # Was heisst  "geringer", weniger Personalpunkte? 
+        # Was heisst  "geringer", weniger Personalpunkte?
+        # TODO: ist ist Frage der gleichzeitgikeit unterschiedllcher Besetzungen / Zusagen nicht klar
 
-        wertigkeitNichtAusreichend = [ {'besetzung':  b.__unicode__(),
-                                        'person': {'text': b.person.__unicode__(),
-                                                    'url': urlresolvers.reverse ('admin:stellenplan_person_change',
-                                                                                 args = (b.person.pk,))  },
-                                       'stelle': {'text': b.stelle.__unicode__(),
-                                                   'url': urlresolvers.reverse ('admin:stellenplan_stelle_change',
-                                                                                args = (b.stelle.pk,))  },
-                                        'url': urlresolvers.reverse ('admin:stellenplan_besetzung_change',
-                                                    args = (b.pk,))
-                                        }
-                                      for b in Besetzung.objects.all()
-                                      if (b.person.wertigkeit !=
-                                          b.stelle.wertigkeit )]
-        ## for b in Besetzung.objects.all():
-        ##     print b
-        ##     print b.person.wertigkeit.personalpunkte
-        ##     print b.stelle.wertigkeit.personalpunkte 
-            
+        wertigkeitNichtAusreichend = []
+        ## wertigkeitNichtAusreichend = [ {'besetzung':  b.__unicode__(),
+        ##                                 'person': {'text': b.person.__unicode__(),
+        ##                                             'url': urlresolvers.reverse ('admin:stellenplan_person_change',
+        ##                                                                          args = (b.person.pk,))  },
+        ##                                'stelle': {'text': b.stelle.__unicode__(),
+        ##                                            'url': urlresolvers.reverse ('admin:stellenplan_stelle_change',
+        ##                                                                         args = (b.stelle.pk,))  },
+        ##                                 'url': urlresolvers.reverse ('admin:stellenplan_besetzung_change',
+        ##                                             args = (b.pk,))
+        ##                                 }
+        ##                               for b in Besetzung.objects.all()
+        ##                               if (b.person.wertigkeit !=
+        ##                                   b.stelle.wertigkeit )]
+
 
 	#  pp(wertigkeitNichtAusreichend)
 
         ##############################
-        
+
         return render (request,
                        'stellenplan/konsistenz.html',
                         {'overlap': overlapmsg,
@@ -267,4 +264,4 @@ class konsistenz (View):
                          'personUnbesetzt': personUnbesetzt,
                          'wertigkeitNichtPassend': wertigkeitNichtAusreichend,
                         })
-    
+
